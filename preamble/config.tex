@@ -1,0 +1,43 @@
+% Configure the document math mode and theorems style.
+
+%Fonts and Language
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{hyperref}
+
+\usepackage[margin=1in]{geometry}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+%load figures in full page
+\usepackage{incgraph,tikz}
+
+%Math Packages - General
+\usepackage{amsmath,amsthm,amssymb,amsfonts,amscd, amsbsy,mathtools}
+\usepackage{mathtools}
+\usepackage{wasysym}
+
+% Logic
+\usepackage{bussproofs}
+
+\everymath{\displaystyle}
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+
+%Document Packages - General
+\usepackage{enumerate}
+\usepackage{faktor}
+
+%Add optional argument
+\usepackage{xparse}
+
+%Enviroments configuration
+\theoremstyle{definition}\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{col}{Corollary}
+\theoremstyle{remark}\newtheorem{remark}{Remark}
