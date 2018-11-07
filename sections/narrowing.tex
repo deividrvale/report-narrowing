@@ -126,7 +126,9 @@ Consider an equational theory $E$ specified by a convergent rewrite system $\trs
 	The equational problem is now a successful narrowing derivation with computed answer substitution $\sigma = [x / a, y / a]$.
 \end{example}
 
-In order to solve an equation $s = t$ in an equational theory, corresponding to such a TRS, one can construct all possible narrowing derivations starting from the given equational goal until an equation $s' = t'$ is obtained such that $s'$ and $t'$ are indeed syntactically unifiable. Note that, if this equational goal has a solution we always will get a last equation of the form $s = s$.
+In order to solve an equation $s = t$ in an equational theory, corresponding to such a TRS, one can construct all possible narrowing derivations starting from the given equational goal until an equation $s' = t'$ is obtained such that $s'$ and $t'$ are indeed syntactically unifiable. Note that, if this equational goal has a solution we always will get a last equation of the form $s = s$. We now investigate the semantic of solving equations using narrowing techniques.
+
+If $(\signature, E)$ is an equational theory, write $[s = t]_E$ for the set of all solutions to the equation $s = t$ modulo $E$. Moreover, if $X$ is some set of substitutions, let $X \sigma$ be the set $\{ \gamma \sigma \mid \gamma \in X \}$.
 
 The narrowing relation was defined on terms rather equational goals. They act upon goals by the means of the above transformation rules.
 
@@ -135,8 +137,15 @@ The narrowing relation was defined on terms rather equational goals. They act up
 	\[
 		\trs =
 		\begin{cases}
-			\rho_1: 0 + x \rightarrow x\\
+			\rho_1: 0 + x \rightarrow x \\
 			\rho_2: s(x) + y \rightarrow s(x + y)
 		\end{cases}
 	\]
 \end{example}
+
+\begin{displaymath}
+    \xymatrix{
+        A \ar@{~>>}[r]_{\sigma}^{*} & B \ar[d] \\
+        t = s\theta \ar[r] & C
+    }
+\end{displaymath}
