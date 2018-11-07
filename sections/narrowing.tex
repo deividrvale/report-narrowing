@@ -48,7 +48,7 @@ The computed solution of the derivation chain is then the composition of such su
 	A \textit{successful} derivation chain is a finite sequence of equational goals $G_0,G_1,\dots,G_n$ such that the last goal is empty. We also say a derivation chain has \textit{failed} if it end is the fail symbol $\bot$.
 \end{definition}
 
-\begin{example}
+\begin{example}\label{example:unif-examples}
 	\begin{enumerate}
 		\item We want to determine an mgu of the terms $f(g(x),h(x,u))$ and $f(z,h(f(y,y),z))$. That is, solving the equational goal:
 		      \begin{align*}
@@ -73,26 +73,70 @@ The computed solution of the derivation chain is then the composition of such su
 
 It can be proved that this set of rules derive a correct and terminating procedure for syntactic unification. (add citation here).
 
-The situation changes if we want to solve equations for a non-empty equation theory $E$.
+The situation changes if we want to solve equations for a non-empty equation theory $E$. This case is studied in the next section.
 
 \section{Narrowing}
+
 \begin{definition}
-    Say a term $s$ \textit{narrows} to a term $t$ if there exists a non-variable position $p \in \pos{s}$, a variant $l \rightarrow r$ of a rewrite rule in $\trs$, and a substitution $\sigma$ satisfying two conditions:
-    \begin{enumerate}
-        \item $\sigma$ is a \textit{mgu} of $s|_p$ and $l$,
-        \item $t = \left( s[r]_{p} \right)\sigma$.
-    \end{enumerate}
+	Say a term $s$ \textit{narrows} to a term $t$ if there exists a non-variable position $p \in \pos{s}$, a variant $l \rightarrow r$ of a rewrite rule in $\trs$, and a substitution $\sigma$ satisfying two conditions:
+	\begin{enumerate}
+		\item $\sigma$ is a \textit{mgu} of $s|_p$ and $l$,
+		\item $t = \left( s[r]_{p} \right)\sigma$.
+	\end{enumerate}
 \end{definition}
 
 The relation $\narrow$ is called \textit{narrowing relation}. We write $s \narrow_{\sigma}^{*} t$ if there exists a narrowing derivation
 $$s = t_1 \narrow_{\sigma_1} t_2 \narrow_{\sigma_2} t_3 \narrow \cdots \narrow_{\sigma_{n-1}}t_n = t$$
+and $\sigma$ is given by $\sigma := \sigma_1\sigma_2 \cdots \sigma_{n-1}$. We consider $\sigma$ as the computed solution to the above narrowing derivation.
 
 \begin{remark}
-    Renaming of rewrite rules will be mandatory to ensure completeness of the narrowing approach. We always use a simple renaming such that $\vars{l} \cap \vars{s} = \emptyset$. This also extend to chains of narrowing derivations.
+	Renaming of rewrite rules will be mandatory to ensure completeness of the narrowing approach. We always use a simple renaming such that $\vars{l} \cap \vars{s} = \emptyset$. This also extend to chains of narrowing derivations.
 \end{remark}
 
 Narrowing was first introduced in the context of $E$-unification. Fay [cite] and Hullot [23] shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing is a first attempt for solving equations in arbitrary equational theories $E$, with the requirement that they can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
 
 For this set of technology we give the name narrowing, we now present the first application (of solving equations modulo $E$) in the framework of transformation rules on sets of equational goals.
 
-Consider an equational theory
+Consider an equational theory $E$ specified by a convergent rewrite system $\trs$, which is called the equational specification of $E$. \newpage
+\begin{table}[ht]
+	\caption{Narrowing rules}
+	\label{table:narrowing_inf_rules}
+	{\small
+		\hrule
+		\vspace{10pt}
+
+		\textbf{(7) Left Narrowing} if $s \narrow_{\sigma} s'$
+		$$\{ s = t \} \cup G \implies_{\sigma} \{ s' = t\sigma \} \cup G\sigma $$
+
+		\textbf{(8) Right Narrowing} if $t \narrow_{\sigma} t'$
+		$$\{ s = t \} \cup G \implies_{\sigma} \{ s\sigma = t' \} \cup G\sigma $$
+		\hrule
+	}
+\end{table}
+
+\begin{example}
+	Let $\trs = \{ g(a) \rightarrow a \}$ and consider the failing unification attempt of Example \ref{example:unif-examples}-(2). Observe that $h(y,g(x),x) \narrow_{[x / a]} h(y,a,a)$. Thus by the above rules:
+	\begin{align*}
+		\{ h(x,y,x) = h(y,g(x),x) \} & \overset{(8)}{\implies}_{[x/A]} \{ h(a,y,a) = h(y,a,a) \} \\
+		                             & \overset{(2)}{\implies} \{ a = y, y = a, a = a \}         \\
+		                             & \overset{(4,1)}{\implies} \{ y = a\}                      \\
+		                             & \overset{(8)}{\implies}_{[x/A]} \{  a = a \}              \\
+		                             & \overset{(1)}{\implies} \emptyset
+	\end{align*}
+	The equational problem is now a successful narrowing derivation with computed answer substitution $\sigma = [x / a, y / a]$.
+\end{example}
+
+In order to solve an equation $s = t$ in an equational theory, corresponding to such a TRS, one can construct all possible narrowing derivations starting from the given equational goal until an equation $s' = t'$ is obtained such that $s'$ and $t'$ are indeed syntactically unifiable. Note that, if this equational goal has a solution we always will get a last equation of the form $s = s$.
+
+The narrowing relation was defined on terms rather equational goals. They act upon goals by the means of the above transformation rules.
+
+\begin{example}
+	Consider the TRS
+	\[
+		\trs =
+		\begin{cases}
+			\rho_1: 0 + x \rightarrow x\\
+			\rho_2: s(x) + y \rightarrow s(x + y)
+		\end{cases}
+	\]
+\end{example}
