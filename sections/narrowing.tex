@@ -73,11 +73,7 @@ The computed solution of the derivation chain is then the composition of such su
 
 It can be proved that this set of rules derive a correct and terminating procedure for syntactic unification. (add citation here).
 
-The situation changes if we want to solve equations for a non-empty equation theory $E$. This case is studied in the next section.
-
-\section{Narrowing}
-
-\begin{definition}
+\begin{definition}\label{definition:narrow}
 	Say a term $s$ \textit{narrows} to a term $t$ if there exists a non-variable position $p \in \pos{s}$, a variant $l \rightarrow r$ of a rewrite rule in $\trs$, and a substitution $\sigma$ satisfying two conditions:
 	\begin{enumerate}
 		\item $\sigma$ is a \textit{mgu} of $s|_p$ and $l$,
@@ -93,7 +89,7 @@ and $\sigma$ is given by $\sigma := \sigma_1\sigma_2 \cdots \sigma_{n-1}$. We co
 	Renaming of rewrite rules will be mandatory to ensure completeness of the narrowing approach. We always use a simple renaming such that $\vars{l} \cap \vars{s} = \emptyset$. This also extend to chains of narrowing derivations.
 \end{remark}
 
-Narrowing was first introduced in the context of $E$-unification. Fay [cite] and Hullot [23] shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing is a first attempt for solving equations in arbitrary equational theories $E$, with the requirement that they can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
+Narrowing was first introduced in the context of $E$-unification. Fay [cite] and Hullot \cite{hullot:cfunif} shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing is a first attempt for solving equations in arbitrary equational theories $E$, with the requirement that they can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
 
 For this set of technology we give the name narrowing, we now present the first application (of solving equations modulo $E$) in the framework of transformation rules on sets of equational goals.
 
@@ -143,9 +139,109 @@ The narrowing relation was defined on terms rather equational goals. They act up
 	\]
 \end{example}
 
-\begin{displaymath}
-    \xymatrix{
-        A \ar@{~>>}[r]_{\sigma}^{*} & B \ar[d] \\
-        t = s\theta \ar[r] & C
-    }
-\end{displaymath}
+The propositions above will be useful to prove the various versions of ``Lifting Lemmas'' of this study.
+\begin{proposition}\label{proposition:varst}
+	If $t$ is a term and $\gamma$ a substitution then $\vars{t\gamma} = (\vars{t} \setminus \dom{\gamma}) \cup \vran{\restr{\gamma}{\vars{t}}}$.
+\end{proposition}
+
+\begin{proposition}\label{proposition:change-of-domain}
+	Suppose we have substitutions $\gamma, \theta, \theta'$ and sets $A,B$ of variables such that $(B \setminus \dom{\gamma}) \cup \vran{\gamma} \subseteq A$. If $\theta =^{A} \theta'$ then $\gamma\theta =^{B} \gamma\theta'$.
+\end{proposition}
+
+\begin{proposition}\label{proposition:change-of-domain-normalized}
+	Let $\trs$ be a TRS and suppose we have sets $A,B$ of variables and substituions $\gamma, \theta, \theta'$ such that the following consditions are satisfied:
+	\begin{enumerate}
+		\item $\restr{\theta}{A}$ is $\trs$-normalized,
+		\item $\theta =^A \gamma \theta'$,
+		\item $B \subseteq (A \setminus \dom{\gamma}) \cup \vran{\restr{\gamma}{A}}$
+	\end{enumerate}
+	Then $\restr{\theta'}{B}$ is also normalized.
+	\begin{proof}
+		Let $x \in B$. We have to show that $x\theta'$ is an $\trs$-normal form. If $x \in A \setminus \dom{\gamma}$ then $x\theta' = x(\gamma\theta') = x\theta$ which is an $\trs$-normal form by the first condition. If $x \in \vran{\restr{\gamma}{A}}$ then there exists a variable $y \in A$ such that $x \in \vars{y\gamma}$. Also, by condition (2), we have $x\theta' \leq (y\gamma)\theta' = y\theta$. By condition (1) $y\theta$ is an $\trs$-normal form and hence its subterm $x\theta'$ is also an $\trs$-normal form.
+	\end{proof}
+\end{proposition}
+
+\begin{lemma}[Lifting Lemma]\label{lemma:lifting-lemma-ordinary-narrowing}
+	Let $\trs$ be a TRS. Suppose we have terms $s$ and $t$, a normalized substitution $\theta$ and a finite set of variables $V$ such that $\vars{s} \cup \dom{\theta} \subseteq V$ and $t = s\theta$. If $t \stc t'$ then there exist a term $s'$ and substitutions $\theta', \gamma$ such that:
+	\begin{enumerate}
+		\item $s \narrow^{*}_{\sigma} s'$,
+		\item $t' = s'\theta'$,
+		\item $\restr{\theta}{V} = \gamma\theta'$,
+		\item $\theta'$ is $\trs$-normalized.
+	\end{enumerate}
+	Futhermore, we may assume that the narrowing derivation $s \narrow^{*}_{\sigma} s'$ and the rewrite sequence $t \stc t'$ employ the same rules at the same positions.
+
+	\begin{proof}
+		The proof is by induction on the length of the reduction sequence from $t$ to $t'$. If $t = t'$, a reduction of length zero, then the result crearly follows. Suppose $t \contr t_1 \stc t'$ is a reduction sequence of length $n+1$.
+
+		\begin{figure}[h!]
+			\begin{displaymath}
+				\xymatrix{
+                    s \ar@{~>}[r]_>>{\gamma_1} & s_1 \ar@{}[dr]|{I.H} \ar@{~>>}[r]_>>{\gamma'}^>>{*} & s' \\
+                    t = s\theta \ar@{-->}[u] \ar@{->>}[r]_>>{\trs} & \ar@{-->}[u] t_1 \ar@{->>}[r]_>>{\trs}^>>{*} & t' = s'\theta' \ar@{-->}[u]
+				}
+			\end{displaymath}
+			\caption{Lifting Lemma}
+			\label{figure:lifting-lemma}
+        \end{figure}
+
+		Let $t$ contract to $t_1$ using a position $p \in \pos{t}$ and a variant $l \rightarrow r$ of a rule from $\trs$ such that $\vars{l} \cap V = \emptyset$. We use the fact that $t = s\theta$ to write $\restr{(s\theta)}{p} = l \tau$ for some substitution $\tau$ with $\dom{\tau} \subseteq \vars{l}$. Since $\theta$ is normalized we have $p$ is a non-variable position and hence $\restr{(s\theta)}{p} = (\restr{s}{p})\theta$. Let $\gamma = \tau \cup \theta$ so $(\restr{s}{p})\gamma = (\restr{s}{p})\theta = l \tau$ then $\restr{s}{p}$ and $l$ are unifiable. Consider $\gamma_1$ as an idempotent mgu of $\restr{s}{p}$ and $l$. By Lemma [1] $\dom{\gamma_1} \cup \vran{\gamma_1} = \vars{\restr{s}{p}} \cup \vars{l}$. Let $s_1 = (s[r]_p)\gamma_1$. By definition \ref{definition:narrow},
+		\begin{equation}\label{lifting-lemma:eqn:s-narrows-s_1}
+			s \narrow_{\gamma_1} s_1
+		\end{equation}
+
+		Since $\gamma_1 \leq \gamma$, there exists a substitution $\rho$ such that $\gamma = \gamma_1 \rho$. Let $V_1 = (V \setminus \dom{\gamma_1}) \cup \vran{\gamma_1}$ and define $\theta_1 = \restr{\rho}{V_1}$. Clearly $\dom{\theta_1} \subseteq V_1$. Also,
+		\begin{align*}
+			\vars{s_1} & = \vars{s[r]_p \gamma_1}                                                       \\
+			           & \subseteq \vars{s[l]_p \gamma_1}                                               \\
+			           & = \vars{s \gamma_1} \text{, by Proposition \ref{proposition:change-of-domain}} \\
+			           & \subseteq V_1.
+		\end{align*}
+		Therefore, $\vars{s_1} \cup \dom{\theta_1} \subseteq V_1$.
+
+		Using the equality $\theta_1 =^{V_1} \rho$ we obtain
+		\begin{align*}
+			s_1 \theta_1 = s_1\rho & = ( (s[r]_p)\gamma_1)\rho \\
+			                       & = (s[r]_p)\gamma          \\
+			                       & = (s\gamma)[r\gamma]_p
+		\end{align*}
+		and since $V \cap \dom{\tau} = \emptyset$ (remember that $\vars{l} \cap V = \emptyset$ and $\dom{\tau} \subseteq \vars{l})$, one have $\gamma =^{V} \theta_1$. Likewise $\gamma =^{\vars{r}} \tau$. Hence the term $(s\gamma)[r\gamma]_p$ is equal to $(s\theta)[r\theta]_p = t_1$. Thus
+		\begin{equation}\label{lifting-lemma:eqn:t_1-instance-s_1}
+			t_1 = s_1\theta_1
+		\end{equation}
+		Next we show that $\gamma_1\theta_1 =^V \theta$. Proposition \ref{proposition:change-of-domain} yields $\gamma_1\theta_1 =^V \gamma_1\rho$. Since $\gamma =^V \theta$ and using the equality $\gamma = \gamma_1\rho$ we have
+		\begin{align}
+			\gamma_1 \theta_1 & =^V \gamma_1 \rho \nonumber                            \\
+			                  & =^V \gamma \nonumber                                   \\
+			                  & =^V \label{lifting-lemma:gamma1-instance-theta} \theta
+		\end{align}
+
+		Finally we show that $\theta_1$ is normalized. Since $\dom{\theta_1} \subseteq V_1$ if suffices to show that $\restr{\theta_1}{V_1}$ is normalized. Let $B = (V \setminus \dom{\gamma_1}) \cup \vars{\restr{\gamma_1}{V}}$. Proposition \ref{proposition:change-of-domain-normalized} (with $A = V$) yields the normalization of $\restr{\theta_1}{B}$. Remember that $\vran{\gamma_1} \subseteq \vars{\restr{s}{p}} \cup \vars{l}$. Let $x \in \vran{\gamma_1}$. Idempotence of $\gamma_1$ yields $x \notin \dom{\gamma_1}$. If $x \in \vars{\restr{s}{p}} \subseteq V$ then $x \in V \setminus \dom{\gamma_1}$. If $x \in \vars{l}$ then $x \in \vars{l\gamma_1} = \vars{(\restr{s}{p})\gamma_1}$ and thus $x \in \vran{\restr{\gamma_1}{V}}$. So $\vran{\gamma_1} \subseteq B$, and hence $B = V_1$. So $\theta_1$ is normalized.
+
+		The induction hypothesis give us a term $s'$ and substitutions $\theta'$, $\gamma'$ such that
+		\begin{align}
+			 & s_1 \narrow_{\gamma'}^{*} s' \label{lifting-lemma:narrow:s_1-narrows-to-s-prime}       \\
+			 & t' = s'\theta'                                                                         \\
+			 & \theta_1 =^{V_1} \gamma'\theta' \label{lifting-lemma:eqn:theta_1-instance-theta-prime} \\
+			 & \theta' \text{ is normalized} \label{lifting-lemma:eqn:theta-prime-is-normalized}
+		\end{align}
+		Moreover, we can assume that $s_1 \narrow_{\gamma'}^{*} s'$ and $t_1 \stc t'$ using the same rules at the same positions. Let $\gamma = \gamma_1 \gamma'$. By joining (\ref{lifting-lemma:eqn:s-narrows-s_1}) and (\ref{lifting-lemma:narrow:s_1-narrows-to-s-prime}) we get $s \narrow_{\gamma}^{*} s'$. By construction this narrowing derivation employs the same positions as the rewrite sequence $t \stc t'$. It remains to show that $\gamma \theta' =^V \theta$. Proposition \ref{proposition:change-of-domain} applied to (\ref{lifting-lemma:eqn:theta_1-instance-theta-prime}) give $\gamma_1 \gamma'\theta' =^V \gamma_1\theta_1$ and hence
+		\begin{align*}
+			\gamma \theta' & =^V \gamma_1\theta_1                                                       \\
+			               & = \theta, \text{ by equation (\ref{lifting-lemma:gamma1-instance-theta}).}
+		\end{align*}
+	\end{proof}
+\end{lemma}
+
+Now we have the following theorem which express the completeness of narrowing on solving equations modulo $E$.
+\begin{theorem}[Narrowing Completeness]\label{theorem:narrowing-completeness}
+    Let $\trs$ be a complete TRS for the equational theory $E$. Let, moreover, $s, t$ be terms and $\sigma \in [s = t]_E$. Then there is a successful derivation starting with $P_0 = \{ s = t \}$, using the rules (1)-(8), such that the computed solution $\tau$ is a solution for $s = t$ with $\tau \leq \sigma$.
+
+    \begin{proof}
+        Let $\trsNF{\sigma}$ be the $\trs$-normal form of $\sigma$. Notice that $\sigma =_{E} \trsNF{\sigma}$, hence $s \trsNF{\sigma} =_{E} t \trsNF{\sigma}$. Confluence of $\trs$ yields the existence of a common reduct $r$, that is, $s\trsNF{\sigma} \stc t \stcR $
+    \end{proof}
+
+\end{theorem}
+
+
+
