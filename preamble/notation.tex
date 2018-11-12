@@ -24,18 +24,18 @@
 \newcommand{\trs}{\mathcal{R}}
 \newcommand{\trsNF}[1]{#1\downarrow}
 
-\newcommand{\contr}{\rightarrow_{\small{\trs}}}
-\newcommand{\tc}{\twoheadrightarrow^{+}_{\small{\trs}}}
-\newcommand{\stc}{\twoheadrightarrow_{\small{\trs}}}
+\newcommand{\contr}{\rightarrow}
+\newcommand{\tc}{\twoheadrightarrow^{+}}
+\newcommand{\stc}{\twoheadrightarrow}
 \newcommand{\stcR}{\twoheadleftarrow}
 
 \newcommand{\fresh}{\#}
 
 \newcommand\restr[2]{{% we make the whole thing an ordinary symbol
-    \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
-        #1 % the function
-        \vphantom{\big|} % pretend it's a little taller at normal size
-    \right|_{#2} % this is the delimiter
+\left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+#1 % the function
+\vphantom{\big|} % pretend it's a little taller at normal size
+\right|_{#2} % this is the delimiter
 }}
 
 \newcommand{\solution}[1]{\mathcal{S}(#1)} %solution set of the problem P

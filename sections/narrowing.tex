@@ -3,10 +3,10 @@
 
 In this section, we discuss the use of narrowing techniques on solving equations over an equational theory $E$. By solving an equation we mean finding a substitution $\sigma$ such that $s \sigma \eqTh{E} t\sigma$. These solutions can be found by unification \textit{modulo} $E$ (if such a unification algorithm exists for this theory), but here we are interested in applications of rewriting theory to solving such equations.
 
-We start the presentation by the so-called syntactic unification, i.e. $E$-unification with empty $E$. The transformation rules given below is due to Martelli and Montanari [citation], the idea is to transform sets of equations to other sets of equations until a termination state is reached; that is, a solution state or a failure one. We also extend this same set of rules for solving $E$-equations.
+We start the presentation by the so-called syntactic unification, i.e. $E$-unification with empty $E$. The transformation rules given below is due to Martelli and Montanari \cite{DBLP:books/el/RV01/BaaderS01}, the idea is to transform sets of equations to other sets of equations until a termination state is reached; that is, a solution state or a failure one.
 
 \begin{definition}
-	Let $\signature$ be a signature. An equational goal is a finite set of $\signature$-equations.
+	Let $\signature$ be a signature. An equational goal is a finite set of $\signature$-equations. Consider the special goal $\bot$ to denote a failed derivation state.
 \end{definition}
 
 \begin{table}[ht]
@@ -17,8 +17,7 @@ We start the presentation by the so-called syntactic unification, i.e. $E$-unifi
 		\vspace{10pt}
 
 		\textbf{(1) Trivial}
-		$$\{ \ueq{x}{x} \} \cup G \implies G $$
-		Delete trivial equations.
+        $$\{ \ueq{x}{x} \} \cup G \implies G $$
 
 		\textbf{(2) Decompose}
 		$$\{\ueq{f(s_1, \cdots, s_n)}{f(t_1, \dots, t_n)}\} \cup G \implies \{\ueq{s_1}{t_1}, \dots , \ueq{s_n}{t_n} \} \cup G$$
@@ -45,7 +44,7 @@ $$G_0 \transRel G_1 \transRel_{\sigma_1} G_2 \transRel_{\sigma_2} \cdots \transR
 The computed solution of the derivation chain is then the composition of such substitutions in their order of appearance.
 
 \begin{definition}
-	A \textit{successful} derivation chain is a finite sequence of equational goals $G_0,G_1,\dots,G_n$ such that the last goal is empty. We also say a derivation chain has \textit{failed} if it end is the fail symbol $\bot$.
+	A \textit{successful} derivation chain is a finite sequence of equational goals $G_0,G_1,\dots,G_n$ such that the last goal is empty. We also say a derivation chain has \textit{failed} if it last goal is the fail symbol $\bot$.
 \end{definition}
 
 \begin{example}\label{example:unif-examples}
@@ -71,29 +70,29 @@ The computed solution of the derivation chain is then the composition of such su
 	\end{enumerate}
 \end{example}
 
-It can be proved that this set of rules derive a correct and terminating procedure for syntactic unification. (add citation here).
+It can be proved (see \cite{DBLP:books/el/RV01/BaaderS01}) that this set of rules derive a correct and terminating procedure for syntactic unification.
 
 \begin{definition}\label{definition:narrow}
 	Say a term $s$ \textit{narrows} to a term $t$ if there exists a non-variable position $p \in \pos{s}$, a variant $l \rightarrow r$ of a rewrite rule in $\trs$, and a substitution $\sigma$ satisfying two conditions:
 	\begin{enumerate}
-		\item $\sigma$ is a \textit{mgu} of $s|_p$ and $l$,
+		\item $\sigma$ is a \textit{mgu} of $\restr{s}{p}$ and $l$,
 		\item $t = \left( s[r]_{p} \right)\sigma$.
 	\end{enumerate}
 \end{definition}
 
 The relation $\narrow$ is called \textit{narrowing relation}. We write $s \narrow_{\sigma}^{*} t$ if there exists a narrowing derivation
 $$s = t_1 \narrow_{\sigma_1} t_2 \narrow_{\sigma_2} t_3 \narrow \cdots \narrow_{\sigma_{n-1}}t_n = t$$
-and $\sigma$ is given by $\sigma := \sigma_1\sigma_2 \cdots \sigma_{n-1}$. We consider $\sigma$ as the computed solution to the above narrowing derivation.
+and $\sigma$ is given by $\sigma := \sigma_1\sigma_2 \cdots \sigma_{n-1}$, the computed solution of the above narrowing derivation.
 
 \begin{remark}
 	Renaming of rewrite rules will be mandatory to ensure completeness of the narrowing approach. We always use a simple renaming such that $\vars{l} \cap \vars{s} = \emptyset$. This also extend to chains of narrowing derivations.
 \end{remark}
 
-Narrowing was first introduced in the context of $E$-unification. Fay [cite] and Hullot \cite{hullot:cfunif} shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing is a first attempt for solving equations in arbitrary equational theories $E$, with the requirement that they can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
+Narrowing was first introduced in the context of $E$-unification. Fay \cite{fay1978first} and Hullot \cite{hullot:cfunif} shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing is a first attempt for solving equations in arbitrary equational theories $E$, with the requirement that they can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
 
-For this set of technology we give the name narrowing, we now present the first application (of solving equations modulo $E$) in the framework of transformation rules on sets of equational goals.
+For this set of technology we give the name \textit{narrowing}, we now present the first application (of solving equations modulo $E$) in the framework of transformation rules on sets of equational goals.
 
-Consider an equational theory $E$ specified by a convergent rewrite system $\trs$, which is called the equational specification of $E$. \newpage
+Consider an equational theory $E$ specified by a convergent rewrite system $\trs$, which is called the equational specification of $E$. The rules below extend the Martelli-Montanari unification on syntax terms to solve equations modulo $E$. \newpage
 \begin{table}[ht]
 	\caption{Narrowing rules}
 	\label{table:narrowing_inf_rules}
@@ -110,6 +109,10 @@ Consider an equational theory $E$ specified by a convergent rewrite system $\trs
 	}
 \end{table}
 
+\begin{definition}
+    A \textit{narrowing derivation} is a finite set of equational goals in which each step is obtained by using the rules (1)-(8). It is a successful narrowing derivation if it last goal is empty.
+\end{definition}
+
 \begin{example}
 	Let $\trs = \{ g(a) \rightarrow a \}$ and consider the failing unification attempt of Example \ref{example:unif-examples}-(2). Observe that $h(y,g(x),x) \narrow_{[x / a]} h(y,a,a)$. Thus by the above rules:
 	\begin{align*}
@@ -122,7 +125,7 @@ Consider an equational theory $E$ specified by a convergent rewrite system $\trs
 	The equational problem is now a successful narrowing derivation with computed answer substitution $\sigma = [x / a, y / a]$.
 \end{example}
 
-In order to solve an equation $s = t$ in an equational theory, corresponding to such a TRS, one can construct all possible narrowing derivations starting from the given equational goal until an equation $s' = t'$ is obtained such that $s'$ and $t'$ are indeed syntactically unifiable. Note that, if this equational goal has a solution we always will get a last equation of the form $s = s$. We now investigate the semantic of solving equations using narrowing techniques.
+In order to solve an equation $\ueq{s}{t}$ in an equational theory, corresponding to such a TRS, one can construct all possible narrowing derivations starting from the given equational goal until an equation $\ueq{s'}{t'}$ is obtained such that $s'$ and $t'$ are indeed syntactically unifiable. Note that, if this equational goal has a solution one always get a last equation of the form $\ueq{s}{s}$. We now investigate the semantic of solving equations using narrowing techniques.
 
 If $(\signature, E)$ is an equational theory, write $[s = t]_E$ for the set of all solutions to the equation $s = t$ modulo $E$. Moreover, if $X$ is some set of substitutions, let $X \sigma$ be the set $\{ \gamma \sigma \mid \gamma \in X \}$.
 
@@ -164,7 +167,7 @@ The propositions above will be useful to prove the various versions of ``Lifting
 \begin{lemma}[Lifting Lemma]\label{lemma:lifting-lemma-ordinary-narrowing}
 	Let $\trs$ be a TRS. Suppose we have terms $s$ and $t$, a normalized substitution $\theta$ and a finite set of variables $V$ such that $\vars{s} \cup \dom{\theta} \subseteq V$ and $t = s\theta$. If $t \stc t'$ then there exist a term $s'$ and substitutions $\theta', \gamma$ such that:
 	\begin{enumerate}
-		\item $s \narrow^{*}_{\sigma} s'$,
+		\item $s \narrow^{*}_{\gamma} s'$,
 		\item $t' = s'\theta'$,
 		\item $\restr{\theta}{V} = \gamma\theta'$,
 		\item $\theta'$ is $\trs$-normalized.
@@ -238,9 +241,37 @@ Now we have the following theorem which express the completeness of narrowing on
     Let $\trs$ be a complete TRS for the equational theory $E$. Let, moreover, $s, t$ be terms and $\sigma \in [s = t]_E$. Then there is a successful derivation starting with $P_0 = \{ s = t \}$, using the rules (1)-(8), such that the computed solution $\tau$ is a solution for $s = t$ with $\tau \leq \sigma$.
 
     \begin{proof}
-        Let $\trsNF{\sigma}$ be the $\trs$-normal form of $\sigma$. Notice that $\sigma =_{E} \trsNF{\sigma}$, hence $s \trsNF{\sigma} =_{E} t \trsNF{\sigma}$. Confluence of $\trs$ yields the existence of a common reduct $r$, that is, $s\trsNF{\sigma} \stc t \stcR $
-    \end{proof}
+        Let $\trsNF{\sigma}$ be the $\trs$-normal form of $\sigma$. Notice that $\sigma =_{E} \trsNF{\sigma}$, hence $s \trsNF{\sigma} =_{E} t \trsNF{\sigma}$. Confluence of $\trs$ yields the existence of a common reduct $r$, that is, $s\trsNF{\sigma} \stc r \stcR t \trsNF{\sigma} $. Now using the Lifting Lemma with $V_1 = \vars{s} \cup \vars{t}$ we get a term $s'$ and substitutions $\rho, \tau$ such that
+        \begin{enumerate}
+            \item $s \narrow_\tau^* s'$
+            \item $r = s' \rho$,
+            \item $\tau \rho =^{V_1} \trsNF{\sigma}$
+        \end{enumerate}
+        Hence we have a derivation $\{s = t \} \implies \cdots \implies \{s' = t\tau\}$ consisting of left narrowing steps with computed answer substitution $\tau$.
 
+        In a similar way, using (3) above, it follows that $t \tau \rho = t \trsNF{\sigma} \sigma \stc r$. We again apply the Lifting Lemma (with $V_2 = \vars{s',s,t}$) which give us a term $t'$ and substitutions $\gamma, \eta$ such that
+        \begin{enumerate}
+            \setcounter{enumi}{3}
+            \item $t \tau \narrow_{\eta}^{*} t'$,
+            \item $r = t' \gamma$,
+            \item $\eta \gamma =^{V_2} \rho$.
+        \end{enumerate}
+        Again we can prolong the above narrowing derivation with a sequence of right narrowing steps
+        $$\{s' = t\} \implies \cdots \{s'\gamma = t'\}$$
+        and obtain as compute answer $\tau \eta$.
+
+        Using (6), (5) and (2) above one get
+        $$s'\eta\gamma = s'\rho = r = t'\gamma$$
+        So $s'\eta$ and $t'$ are unifiable. The Martelli-Montanari rules yields an mgu $\gamma'$ of $s'\eta$ and $t'$. So one have a successful derivation with computed solution $\tau \eta \gamma'$. This is indeed a solution: since $s \narrow_{\tau}^* s'$ and $t\tau \narrow_{\eta}^{*} t'$, we have $s\tau =_E s'$ and
+        $$t\tau \eta \gamma' =_E s'\eta\gamma' = t'\gamma' =_E t\tau\eta\gamma'.$$
+        It remains to show that $\tau\eta \gamma' \iqoless[E][V_1]$. Since $\gamma'$ is most general, there exists a $\rho'$ such that
+        $$\tau \eta \gamma' \rho' = \tau \eta \gamma =_E \tau \rho =_E \trsNF{\sigma} =_E \sigma.$$
+        Hence, $\tau \eta \gamma' \iqoless[E][V_1] \sigma$. As required.
+    \end{proof}
+    From the above proof one can see that we can indeed drop the strong normalization condition if only normalized substitution is considered. Strong normalization of $\trs$ is only used in the normalization of $\sigma$ to $\trsNF{\sigma}$, hence we can strengthen this result by dropping the strong normalization requirement and restricting ourselves to normalizable substitutions. Since in a weakly normalizing TRS every substitution is normalizable, we obtain the following result.
+    \begin{corollary}
+        Narrowing is complete for weakly normalizing and confluent Term Rewriting Systems.
+    \end{corollary}
 \end{theorem}
 
 
