@@ -1,12 +1,12 @@
 % !TeX root = ../main.tex
 \section{Narrowing}
 
-In this section, we discuss the use of narrowing techniques on solving equations over an equational theory $E$. By solving an equation we mean finding a substitution $\sigma$ such that $s \sigma \eqTh{E} t\sigma$. These solutions can be found by unification \textit{modulo} $E$ (if such unification algorithm exists for this theory), but here we are interested in applications of rewriting theory to solving such equations.
+In this section, we discuss the use of narrowing techniques on solving equations over an equational theory $E$. By solving an equation we mean finding a substitution $\sigma$ such that $s \sigma \eqTh{E} t\sigma$. These solutions can be found by unification \textit{modulo} $E$ (if such a unification algorithm exists for this theory), but here we are interested in applications of rewriting theory to solving such equations.
 
-We start the presentation by the so-called syntactic unification, i.e. $E$-unification with empty $E$. The transformation rules given below is due to Martelli and Montanari [citation], the idea is to transform sets of equations to other sets of equations until a termination state is reached; that is, a solution state or a failure one. We also extend this same set of rules to solving $E$-equations.
+We start the presentation by the so-called syntactic unification, i.e. $E$-unification with empty $E$. The transformation rules given below is due to Martelli and Montanari \cite{DBLP:books/el/RV01/BaaderS01}, the idea is to transform sets of equations to other sets of equations until a termination state is reached; that is, a solution state or a failure one.
 
 \begin{definition}
-    Let $\signature$ be a signature. An equational goal is a finite set of $\signature$-equations.
+	Let $\signature$ be a signature. An equational goal is a finite set of $\signature$-equations. Consider the special goal $\bot$ to denote a failed derivation state.
 \end{definition}
 
 \begin{table}[ht]
@@ -17,11 +17,10 @@ We start the presentation by the so-called syntactic unification, i.e. $E$-unifi
 		\vspace{10pt}
 
 		\textbf{(1) Trivial}
-		$$\{ \ueq{x}{x} \} \cup G \implies G $$
-		Delete trivial equations.
+        $$\{ \ueq{x}{x} \} \cup G \implies G $$
 
 		\textbf{(2) Decompose}
-        $$\{\ueq{f(s_1, \cdots, s_n)}{f(t_1, \dots, t_n)}\} \cup G \implies \{\ueq{s_1}{t_1}, \dots , \ueq{s_n}{t_n} \} \cup G$$
+		$$\{\ueq{f(s_1, \cdots, s_n)}{f(t_1, \dots, t_n)}\} \cup G \implies \{\ueq{s_1}{t_1}, \dots , \ueq{s_n}{t_n} \} \cup G$$
 
 		\textbf{(3) Symbol Clash}
 		$$\{ \ueq{f(s_1, \dots, s_n)}{g(t_1, \dots, t_n)} \} \cup G \implies \bot \; \text{if} \; f \neq g $$
@@ -45,32 +44,235 @@ $$G_0 \transRel G_1 \transRel_{\sigma_1} G_2 \transRel_{\sigma_2} \cdots \transR
 The computed solution of the derivation chain is then the composition of such substitutions in their order of appearance.
 
 \begin{definition}
-    A \textit{successful} derivation chain is a finite sequence of equational goals $G_0,G_1,\dots,G_n$ such that the last goal is empty. We also say a derivation chain has \textit{failed} if it end is the fail symbol $\bot$.
+	A \textit{successful} derivation chain is a finite sequence of equational goals $G_0,G_1,\dots,G_n$ such that the last goal is empty. We also say a derivation chain has \textit{failed} if it last goal is the fail symbol $\bot$.
+\end{definition}
+
+\begin{example}\label{example:unif-examples}
+	\begin{enumerate}
+		\item We want to determine an mgu of the terms $f(g(x),h(x,u))$ and $f(z,h(f(y,y),z))$. That is, solving the equational goal:
+		      \begin{align*}
+			      \{ f(g(x),h(x,u)) & = f(z,h(f(y,y),z)) \}                                           \\
+			                        & \overset{(2)}{\transRel} \{g(x) = z, h(x,u) = h(f(y,y),z)\}     \\
+			                        & \overset{(4)}{\transRel} \{z = g(x), h(x,u) = h(f(y,y),z)\}     \\
+			                        & \overset{(6)}{\transRel}_{[z/g(x)]} \{h(x,u) = h(f(y,y),g(x))\} \\
+			                        & \overset{(2)}{\transRel} \{x = f(y,y), u = g(x) \}              \\
+			                        & \overset{(6)}{\transRel}_{[x/f(y,y)]} \{ u = g(f(y,y)) \}       \\
+			                        & \overset{(6)}{\transRel}_{[u/f(y,y)]} \emptyset
+		      \end{align*}
+		      We get as the computed solution to the problem the composition $[z/g(x)][x/f(y,y)][u/g(f(y,y))]$.
+
+		\item A failing unification derivation:
+		      \begin{align*}
+			      \{ h(x,y,x) & = h(y,g(x),x)\}                                     \\
+			                  & \overset{(2)}{\transRel} \{x = y, x = g(x), x = x\} \\
+			                  & \overset{(5)}{\transRel} \bot
+		      \end{align*}
+	\end{enumerate}
+\end{example}
+
+It can be proved (see \cite{DBLP:books/el/RV01/BaaderS01}) that this set of rules derive a correct and terminating procedure for syntactic unification.
+
+\begin{definition}\label{definition:narrow}
+	Say a term $s$ \textit{narrows} to a term $t$ if there exists a non-variable position $p \in \pos{s}$, a variant $l \rightarrow r$ of a rewrite rule in $\trs$, and a substitution $\sigma$ satisfying two conditions:
+	\begin{enumerate}
+		\item $\sigma$ is a \textit{mgu} of $\restr{s}{p}$ and $l$,
+		\item $t = \left( s[r]_{p} \right)\sigma$.
+	\end{enumerate}
+\end{definition}
+
+The relation $\narrow$ is called \textit{narrowing relation}. We write $s \narrow_{\sigma}^{*} t$ if there exists a narrowing derivation
+$$s = t_1 \narrow_{\sigma_1} t_2 \narrow_{\sigma_2} t_3 \narrow \cdots \narrow_{\sigma_{n-1}}t_n = t$$
+and $\sigma$ is given by $\sigma := \sigma_1\sigma_2 \cdots \sigma_{n-1}$, the computed solution of the above narrowing derivation.
+
+\begin{remark}
+	Renaming of rewrite rules will be mandatory to ensure completeness of the narrowing approach. We always use a simple renaming such that $\vars{l} \cap \vars{s} = \emptyset$. This also extend to chains of narrowing derivations.
+\end{remark}
+
+Narrowing was first introduced in the context of $E$-unification. Fay \cite{fay1978first} and Hullot \cite{hullot:cfunif} shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing is a first attempt for solving equations in arbitrary equational theories $E$, with the requirement that they can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
+
+For this set of technology we give the name \textit{narrowing}, we now present the first application (of solving equations modulo $E$) in the framework of transformation rules on sets of equational goals.
+
+Consider an equational theory $E$ specified by a convergent rewrite system $\trs$, which is called the equational specification of $E$. The rules below extend the Martelli-Montanari unification on syntax terms to solve equations modulo $E$. \newpage
+\begin{table}[ht]
+	\caption{Narrowing rules}
+	\label{table:narrowing_inf_rules}
+	{\small
+		\hrule
+		\vspace{10pt}
+
+		\textbf{(7) Left Narrowing} if $s \narrow_{\sigma} s'$
+		$$\{ s = t \} \cup G \implies_{\sigma} \{ s' = t\sigma \} \cup G\sigma $$
+
+		\textbf{(8) Right Narrowing} if $t \narrow_{\sigma} t'$
+		$$\{ s = t \} \cup G \implies_{\sigma} \{ s\sigma = t' \} \cup G\sigma $$
+		\hrule
+	}
+\end{table}
+
+\begin{definition}
+    A \textit{narrowing derivation} is a finite set of equational goals in which each step is obtained by using the rules (1)-(8). It is a successful narrowing derivation if it last goal is empty.
 \end{definition}
 
 \begin{example}
-    \begin{enumerate}
-        \item We want to determine an mgu of the terms $f(g(x),h(x,u))$ and $f(z,h(f(y,y),z))$. That is, solving the equational goal:
-        \begin{align*}
-            \{ f(g(x),h(x,u)) &= f(z,h(f(y,y),z)) \}\\
-            &\overset{(2)}{\transRel} \{g(x) = z, h(x,u) = h(f(y,y),z)\} \\
-            &\overset{(4)}{\transRel} \{z = g(x), h(x,u) = h(f(y,y),z)\} \\
-            &\overset{(6)}{\transRel}_{[z/g(x)]} \{h(x,u) = h(f(y,y),g(x))\} \\
-            &\overset{(2)}{\transRel} \{x = f(y,y), u = g(x) \} \\
-            &\overset{(6)}{\transRel}_{[x/f(y,y)]} \{ u = g(f(y,y)) \} \\
-            &\overset{(6)}{\transRel}_{[u/f(y,y)]} \emptyset
-        \end{align*}
-        We get as the computed solution to the problem the composition $[z/g(x)][x/f(y,y)][u/g(f(y,y))]$.
-
-        \item A failing unification derivation:
-        \begin{align*}
-            \{ h(x,y,x) &= h(y,g(x),x)\}\\
-            &\overset{(2)}{\transRel} \{x = y, x = g(x), x = x\} \\
-            &\overset{(5)}{\transRel} \bot
-        \end{align*}
-    \end{enumerate}
+	Let $\trs = \{ g(a) \rightarrow a \}$ and consider the failing unification attempt of Example \ref{example:unif-examples}-(2). Observe that $h(y,g(x),x) \narrow_{[x / a]} h(y,a,a)$. Thus by the above rules:
+	\begin{align*}
+		\{ h(x,y,x) = h(y,g(x),x) \} & \overset{(8)}{\implies}_{[x/A]} \{ h(a,y,a) = h(y,a,a) \} \\
+		                             & \overset{(2)}{\implies} \{ a = y, y = a, a = a \}         \\
+		                             & \overset{(4,1)}{\implies} \{ y = a\}                      \\
+		                             & \overset{(8)}{\implies}_{[x/A]} \{  a = a \}              \\
+		                             & \overset{(1)}{\implies} \emptyset
+	\end{align*}
+	The equational problem is now a successful narrowing derivation with computed answer substitution $\sigma = [x / a, y / a]$.
 \end{example}
 
-It can be proved that this set of rules derive a correct and terminating procedure for syntactic unification. (add citation here).
+In order to solve an equation $\ueq{s}{t}$ in an equational theory, corresponding to such a TRS, one can construct all possible narrowing derivations starting from the given equational goal until an equation $\ueq{s'}{t'}$ is obtained such that $s'$ and $t'$ are indeed syntactically unifiable. Note that, if this equational goal has a solution one always get a last equation of the form $\ueq{s}{s}$. We now investigate the semantic of solving equations using narrowing techniques.
 
-The situation changes if we whant to solve equations for a non-empty equation theory $E$.
+If $(\signature, E)$ is an equational theory, write $[s = t]_E$ for the set of all solutions to the equation $s = t$ modulo $E$. Moreover, if $X$ is some set of substitutions, let $X \sigma$ be the set $\{ \gamma \sigma \mid \gamma \in X \}$.
+
+The narrowing relation was defined on terms rather equational goals. They act upon goals by the means of the above transformation rules.
+
+\begin{example}
+	Consider the TRS
+	\[
+		\trs =
+		\begin{cases}
+			\rho_1: 0 + x \rightarrow x \\
+			\rho_2: s(x) + y \rightarrow s(x + y)
+		\end{cases}
+	\]
+\end{example}
+
+The propositions above will be useful to prove the various versions of ``Lifting Lemmas'' of this study.
+\begin{proposition}\label{proposition:varst}
+	If $t$ is a term and $\gamma$ a substitution then $\vars{t\gamma} = (\vars{t} \setminus \dom{\gamma}) \cup \vran{\restr{\gamma}{\vars{t}}}$.
+\end{proposition}
+
+\begin{proposition}\label{proposition:change-of-domain}
+	Suppose we have substitutions $\gamma, \theta, \theta'$ and sets $A,B$ of variables such that $(B \setminus \dom{\gamma}) \cup \vran{\gamma} \subseteq A$. If $\theta =^{A} \theta'$ then $\gamma\theta =^{B} \gamma\theta'$.
+\end{proposition}
+
+\begin{proposition}\label{proposition:change-of-domain-normalized}
+	Let $\trs$ be a TRS and suppose we have sets $A,B$ of variables and substituions $\gamma, \theta, \theta'$ such that the following consditions are satisfied:
+	\begin{enumerate}
+		\item $\restr{\theta}{A}$ is $\trs$-normalized,
+		\item $\theta =^A \gamma \theta'$,
+		\item $B \subseteq (A \setminus \dom{\gamma}) \cup \vran{\restr{\gamma}{A}}$
+	\end{enumerate}
+	Then $\restr{\theta'}{B}$ is also normalized.
+	\begin{proof}
+		Let $x \in B$. We have to show that $x\theta'$ is an $\trs$-normal form. If $x \in A \setminus \dom{\gamma}$ then $x\theta' = x(\gamma\theta') = x\theta$ which is an $\trs$-normal form by the first condition. If $x \in \vran{\restr{\gamma}{A}}$ then there exists a variable $y \in A$ such that $x \in \vars{y\gamma}$. Also, by condition (2), we have $x\theta' \leq (y\gamma)\theta' = y\theta$. By condition (1) $y\theta$ is an $\trs$-normal form and hence its subterm $x\theta'$ is also an $\trs$-normal form.
+	\end{proof}
+\end{proposition}
+
+\begin{lemma}[Lifting Lemma]\label{lemma:lifting-lemma-ordinary-narrowing}
+	Let $\trs$ be a TRS. Suppose we have terms $s$ and $t$, a normalized substitution $\theta$ and a finite set of variables $V$ such that $\vars{s} \cup \dom{\theta} \subseteq V$ and $t = s\theta$. If $t \stc t'$ then there exist a term $s'$ and substitutions $\theta', \gamma$ such that:
+	\begin{enumerate}
+		\item $s \narrow^{*}_{\gamma} s'$,
+		\item $t' = s'\theta'$,
+		\item $\restr{\theta}{V} = \gamma\theta'$,
+		\item $\theta'$ is $\trs$-normalized.
+	\end{enumerate}
+	Futhermore, we may assume that the narrowing derivation $s \narrow^{*}_{\sigma} s'$ and the rewrite sequence $t \stc t'$ employ the same rules at the same positions.
+
+	\begin{proof}
+		The proof is by induction on the length of the reduction sequence from $t$ to $t'$. If $t = t'$, a reduction of length zero, then the result crearly follows. Suppose $t \contr t_1 \stc t'$ is a reduction sequence of length $n+1$.
+
+		\begin{figure}[h!]
+			\begin{displaymath}
+				\xymatrix{
+                    s \ar@{~>}[r]_>>{\gamma_1} & s_1 \ar@{}[dr]|{I.H} \ar@{~>>}[r]_>>{\gamma'}^>>{*} & s' \\
+                    t = s\theta \ar@{-->}[u] \ar@{->>}[r]_>>{\trs} & \ar@{-->}[u] t_1 \ar@{->>}[r]_>>{\trs}^>>{*} & t' = s'\theta' \ar@{-->}[u]
+				}
+			\end{displaymath}
+			\caption{Lifting Lemma}
+			\label{figure:lifting-lemma}
+        \end{figure}
+
+		Let $t$ contract to $t_1$ using a position $p \in \pos{t}$ and a variant $l \rightarrow r$ of a rule from $\trs$ such that $\vars{l} \cap V = \emptyset$. We use the fact that $t = s\theta$ to write $\restr{(s\theta)}{p} = l \tau$ for some substitution $\tau$ with $\dom{\tau} \subseteq \vars{l}$. Since $\theta$ is normalized we have $p$ is a non-variable position and hence $\restr{(s\theta)}{p} = (\restr{s}{p})\theta$. Let $\gamma = \tau \cup \theta$ so $(\restr{s}{p})\gamma = (\restr{s}{p})\theta = l \tau$ then $\restr{s}{p}$ and $l$ are unifiable. Consider $\gamma_1$ as an idempotent mgu of $\restr{s}{p}$ and $l$. By Lemma [1] $\dom{\gamma_1} \cup \vran{\gamma_1} = \vars{\restr{s}{p}} \cup \vars{l}$. Let $s_1 = (s[r]_p)\gamma_1$. By definition \ref{definition:narrow},
+		\begin{equation}\label{lifting-lemma:eqn:s-narrows-s_1}
+			s \narrow_{\gamma_1} s_1
+		\end{equation}
+
+		Since $\gamma_1 \leq \gamma$, there exists a substitution $\rho$ such that $\gamma = \gamma_1 \rho$. Let $V_1 = (V \setminus \dom{\gamma_1}) \cup \vran{\gamma_1}$ and define $\theta_1 = \restr{\rho}{V_1}$. Clearly $\dom{\theta_1} \subseteq V_1$. Also,
+		\begin{align*}
+			\vars{s_1} & = \vars{s[r]_p \gamma_1}                                                       \\
+			           & \subseteq \vars{s[l]_p \gamma_1}                                               \\
+			           & = \vars{s \gamma_1} \text{, by Proposition \ref{proposition:change-of-domain}} \\
+			           & \subseteq V_1.
+		\end{align*}
+		Therefore, $\vars{s_1} \cup \dom{\theta_1} \subseteq V_1$.
+
+		Using the equality $\theta_1 =^{V_1} \rho$ we obtain
+		\begin{align*}
+			s_1 \theta_1 = s_1\rho & = ( (s[r]_p)\gamma_1)\rho \\
+			                       & = (s[r]_p)\gamma          \\
+			                       & = (s\gamma)[r\gamma]_p
+		\end{align*}
+		and since $V \cap \dom{\tau} = \emptyset$ (remember that $\vars{l} \cap V = \emptyset$ and $\dom{\tau} \subseteq \vars{l})$, one have $\gamma =^{V} \theta_1$. Likewise $\gamma =^{\vars{r}} \tau$. Hence the term $(s\gamma)[r\gamma]_p$ is equal to $(s\theta)[r\theta]_p = t_1$. Thus
+		\begin{equation}\label{lifting-lemma:eqn:t_1-instance-s_1}
+			t_1 = s_1\theta_1
+		\end{equation}
+		Next we show that $\gamma_1\theta_1 =^V \theta$. Proposition \ref{proposition:change-of-domain} yields $\gamma_1\theta_1 =^V \gamma_1\rho$. Since $\gamma =^V \theta$ and using the equality $\gamma = \gamma_1\rho$ we have
+		\begin{align}
+			\gamma_1 \theta_1 & =^V \gamma_1 \rho \nonumber                            \\
+			                  & =^V \gamma \nonumber                                   \\
+			                  & =^V \label{lifting-lemma:gamma1-instance-theta} \theta
+		\end{align}
+
+		Finally we show that $\theta_1$ is normalized. Since $\dom{\theta_1} \subseteq V_1$ if suffices to show that $\restr{\theta_1}{V_1}$ is normalized. Let $B = (V \setminus \dom{\gamma_1}) \cup \vars{\restr{\gamma_1}{V}}$. Proposition \ref{proposition:change-of-domain-normalized} (with $A = V$) yields the normalization of $\restr{\theta_1}{B}$. Remember that $\vran{\gamma_1} \subseteq \vars{\restr{s}{p}} \cup \vars{l}$. Let $x \in \vran{\gamma_1}$. Idempotence of $\gamma_1$ yields $x \notin \dom{\gamma_1}$. If $x \in \vars{\restr{s}{p}} \subseteq V$ then $x \in V \setminus \dom{\gamma_1}$. If $x \in \vars{l}$ then $x \in \vars{l\gamma_1} = \vars{(\restr{s}{p})\gamma_1}$ and thus $x \in \vran{\restr{\gamma_1}{V}}$. So $\vran{\gamma_1} \subseteq B$, and hence $B = V_1$. So $\theta_1$ is normalized.
+
+		The induction hypothesis give us a term $s'$ and substitutions $\theta'$, $\gamma'$ such that
+		\begin{align}
+			 & s_1 \narrow_{\gamma'}^{*} s' \label{lifting-lemma:narrow:s_1-narrows-to-s-prime}       \\
+			 & t' = s'\theta'                                                                         \\
+			 & \theta_1 =^{V_1} \gamma'\theta' \label{lifting-lemma:eqn:theta_1-instance-theta-prime} \\
+			 & \theta' \text{ is normalized} \label{lifting-lemma:eqn:theta-prime-is-normalized}
+		\end{align}
+		Moreover, we can assume that $s_1 \narrow_{\gamma'}^{*} s'$ and $t_1 \stc t'$ using the same rules at the same positions. Let $\gamma = \gamma_1 \gamma'$. By joining (\ref{lifting-lemma:eqn:s-narrows-s_1}) and (\ref{lifting-lemma:narrow:s_1-narrows-to-s-prime}) we get $s \narrow_{\gamma}^{*} s'$. By construction this narrowing derivation employs the same positions as the rewrite sequence $t \stc t'$. It remains to show that $\gamma \theta' =^V \theta$. Proposition \ref{proposition:change-of-domain} applied to (\ref{lifting-lemma:eqn:theta_1-instance-theta-prime}) give $\gamma_1 \gamma'\theta' =^V \gamma_1\theta_1$ and hence
+		\begin{align*}
+			\gamma \theta' & =^V \gamma_1\theta_1                                                       \\
+			               & = \theta, \text{ by equation (\ref{lifting-lemma:gamma1-instance-theta}).}
+		\end{align*}
+	\end{proof}
+\end{lemma}
+
+Now we have the following theorem which express the completeness of narrowing on solving equations modulo $E$.
+\begin{theorem}[Narrowing Completeness]\label{theorem:narrowing-completeness}
+    Let $\trs$ be a complete TRS for the equational theory $E$. Let, moreover, $s, t$ be terms and $\sigma \in [s = t]_E$. Then there is a successful derivation starting with $P_0 = \{ s = t \}$, using the rules (1)-(8), such that the computed solution $\tau$ is a solution for $s = t$ with $\tau \leq \sigma$.
+
+    \begin{proof}
+        Let $\trsNF{\sigma}$ be the $\trs$-normal form of $\sigma$. Notice that $\sigma =_{E} \trsNF{\sigma}$, hence $s \trsNF{\sigma} =_{E} t \trsNF{\sigma}$. Confluence of $\trs$ yields the existence of a common reduct $r$, that is, $s\trsNF{\sigma} \stc r \stcR t \trsNF{\sigma} $. Now using the Lifting Lemma with $V_1 = \vars{s} \cup \vars{t}$ we get a term $s'$ and substitutions $\rho, \tau$ such that
+        \begin{enumerate}
+            \item $s \narrow_\tau^* s'$
+            \item $r = s' \rho$,
+            \item $\tau \rho =^{V_1} \trsNF{\sigma}$
+        \end{enumerate}
+        Hence we have a derivation $\{s = t \} \implies \cdots \implies \{s' = t\tau\}$ consisting of left narrowing steps with computed answer substitution $\tau$.
+
+        In a similar way, using (3) above, it follows that $t \tau \rho = t \trsNF{\sigma} \sigma \stc r$. We again apply the Lifting Lemma (with $V_2 = \vars{s',s,t}$) which give us a term $t'$ and substitutions $\gamma, \eta$ such that
+        \begin{enumerate}
+            \setcounter{enumi}{3}
+            \item $t \tau \narrow_{\eta}^{*} t'$,
+            \item $r = t' \gamma$,
+            \item $\eta \gamma =^{V_2} \rho$.
+        \end{enumerate}
+        Again we can prolong the above narrowing derivation with a sequence of right narrowing steps
+        $$\{s' = t\} \implies \cdots \{s'\gamma = t'\}$$
+        and obtain as compute answer $\tau \eta$.
+
+        Using (6), (5) and (2) above one get
+        $$s'\eta\gamma = s'\rho = r = t'\gamma$$
+        So $s'\eta$ and $t'$ are unifiable. The Martelli-Montanari rules yields an mgu $\gamma'$ of $s'\eta$ and $t'$. So one have a successful derivation with computed solution $\tau \eta \gamma'$. This is indeed a solution: since $s \narrow_{\tau}^* s'$ and $t\tau \narrow_{\eta}^{*} t'$, we have $s\tau =_E s'$ and
+        $$t\tau \eta \gamma' =_E s'\eta\gamma' = t'\gamma' =_E t\tau\eta\gamma'.$$
+        It remains to show that $\tau\eta \gamma' \iqoless[E][V_1]$. Since $\gamma'$ is most general, there exists a $\rho'$ such that
+        $$\tau \eta \gamma' \rho' = \tau \eta \gamma =_E \tau \rho =_E \trsNF{\sigma} =_E \sigma.$$
+        Hence, $\tau \eta \gamma' \iqoless[E][V_1] \sigma$. As required.
+    \end{proof}
+    From the above proof one can see that we can indeed drop the strong normalization condition if only normalized substitution is considered. Strong normalization of $\trs$ is only used in the normalization of $\sigma$ to $\trsNF{\sigma}$, hence we can strengthen this result by dropping the strong normalization requirement and restricting ourselves to normalizable substitutions. Since in a weakly normalizing TRS every substitution is normalizable, we obtain the following result.
+    \begin{corollary}
+        Narrowing is complete for weakly normalizing and confluent Term Rewriting Systems.
+    \end{corollary}
+\end{theorem}
+
+
+
