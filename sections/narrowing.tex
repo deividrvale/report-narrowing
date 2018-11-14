@@ -88,7 +88,7 @@ and $\sigma$ is given by $\sigma := \sigma_1\sigma_2 \cdots \sigma_{n-1}$, the c
 	Renaming of rewrite rules will be mandatory to ensure completeness of the narrowing approach. We always use a simple renaming such that $\vars{l} \cap \vars{s} = \emptyset$. This also extend to chains of narrowing derivations.
 \end{remark}
 
-Narrowing was first introduced in the context of $E$-unification. Fay \cite{fay1978first} and Hullot \cite{hullot:cfunif} shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing is a first attempt for solving equations in arbitrary equational theories $E$, with the requirement that they can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
+Narrowing was first introduced in the context of $E$-unification. Fay \cite{fay1978first} and Hullot \cite{hullot:cfunif} shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing derive from paramodulation (a first attempt for solving equations in arbitrary equational theories), but with the requirement that the theory can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
 
 For this set of technology we give the name \textit{narrowing}, we now present the first application (of solving equations modulo $E$) in the framework of transformation rules on sets of equational goals.
 
@@ -127,7 +127,9 @@ Consider an equational theory $E$ specified by a convergent rewrite system $\trs
 
 In order to solve an equation $\ueq{s}{t}$ in an equational theory, corresponding to such a TRS, one can construct all possible narrowing derivations starting from the given equational goal until an equation $\ueq{s'}{t'}$ is obtained such that $s'$ and $t'$ are indeed syntactically unifiable. Note that, if this equational goal has a solution one always get a last equation of the form $\ueq{s}{s}$. We now investigate the semantic of solving equations using narrowing techniques.
 
-If $(\signature, E)$ is an equational theory, write $[s = t]_E$ for the set of all solutions to the equation $s = t$ modulo $E$. Moreover, if $X$ is some set of substitutions, let $X \sigma$ be the set $\{ \gamma \sigma \mid \gamma \in X \}$.
+If $(\signature, E)$ is an equational theory, write $[s = t]_E$ for the set of all solutions to the equation $s = t$ modulo $E$, i.e $\{\gamma \mid E \vdash s\gamma = t \gamma \}$. Moreover, if $X$ is some set of substitutions, let $\sigma X$ be the set $\{ \sigma \mid \gamma \in X \}$.
+
+By definition, solutions of the equation $s \eqUnif{E}{?}t$ are indeed closed under any ``variable assignment'', that is, they are closed under applications of substitutions. As explained in \cite{10.1007/BFb0032044} -- Section 2.4; for every substitution $\sigma$ we have $[s = t]_E \supseteq \{ \sigma \tau \mid E \vdash s\sigma \tau = t \sigma \tau  \} = \sigma [s\sigma = t \sigma]_E$, there is in principle the possibility of a stepwise determination of $[s = t]_E$ by means of ``specializations'' of the solution set. It consists of two kind of steps. The first one is as jus described guess a component $\sigma$ of the solution set and narrows $[s = t ]_E$ to $\sigma[s = t]_E$. The other one is: apply one equation of $E$ in one of the sides of the equation $s = t$ in hand. It is clear that this two types of steps do not change the solution set of the equation $s \eqUnif{E}{?} t$. In this way, by interating steps of the first and second type, we can finally get an equation that is syntactically unifiable, as described above.
 
 The narrowing relation was defined on terms rather equational goals. They act upon goals by the means of the above transformation rules.
 
@@ -152,7 +154,7 @@ The propositions above will be useful to prove the various versions of ``Lifting
 \end{proposition}
 
 \begin{proposition}\label{proposition:change-of-domain-normalized}
-	Let $\trs$ be a TRS and suppose we have sets $A,B$ of variables and substituions $\gamma, \theta, \theta'$ such that the following consditions are satisfied:
+	Let $\trs$ be a TRS and suppose we have sets $A,B$ of variables and substitutions $\gamma, \theta, \theta'$ such that the following consditions are satisfied:
 	\begin{enumerate}
 		\item $\restr{\theta}{A}$ is $\trs$-normalized,
 		\item $\theta =^A \gamma \theta'$,
