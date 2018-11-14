@@ -31,6 +31,8 @@
 
 \newcommand{\fresh}{\#}
 
+
+
 \newcommand\restr[2]{{% we make the whole thing an ordinary symbol
 \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
 #1 % the function
@@ -81,3 +83,7 @@
 \DeclareDocumentCommand\csu{ O{}}{%
 	\mathcal{U}_{#1}
 }
+
+% Examples Function and specifications
+\newcommand{\appFunc}[2]{\mathtt{app}\left(#1,#2\right)}
+\newcommand{\nilList}{\mathtt{nil}}
