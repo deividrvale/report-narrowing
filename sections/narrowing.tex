@@ -6,7 +6,7 @@ In this section, we discuss the use of narrowing techniques on solving equations
 We start the presentation by the so-called syntactic unification, i.e. $E$-unification with empty $E$. The transformation rules given below is due to Martelli and Montanari \cite{DBLP:books/el/RV01/BaaderS01}, the idea is to transform sets of equations to other sets of equations until a termination state is reached; that is, a solution state or a failure one.
 
 \begin{definition}
-	Let $\signature$ be a signature. An equational goal is a finite set of $\signature$-equations. Consider the special goal $\bot$ to denote a failed derivation state.
+	Let $\signature$ be a signature. An equational goal is a finite set of $\signature$-equations.
 \end{definition}
 
 \begin{table}[ht]
@@ -87,6 +87,8 @@ and $\sigma$ is given by $\sigma := \sigma_1\sigma_2 \cdots \sigma_{n-1}$, the c
 \begin{remark}
 	Renaming of rewrite rules will be mandatory to ensure completeness of the narrowing approach. We always use a simple renaming such that $\vars{l} \cap \vars{s} = \emptyset$. This also extend to chains of narrowing derivations.
 \end{remark}
+
+In a rewrite step $s \contr_[p, l \contr r, \sigma] t$ we always assume that the applied rewrite rule has no variables in common with $s$ and $\sigma$ is restricted to variables occurring in $l$. Consequently, $\sigma$ is a most general unifier of $\restr{s}{p}$ and $l$, and $t = s[r\sigma]_p = (s[r]_p)\sigma$. Hence rewriting can be viewed as a special case of narrowing.
 
 Narrowing was first introduced in the context of $E$-unification. Fay \cite{fay1978first} and Hullot \cite{hullot:cfunif} shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing derive from paramodulation (a first attempt for solving equations in arbitrary equational theories), but with the requirement that the theory can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
 
