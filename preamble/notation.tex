@@ -19,6 +19,9 @@
 \newcommand{\swapping}[2]{(#1 \ \ #2)}      %The Swapping permutation.
 \newcommand{\terms}{T(\signature,\atomSet,\var)}    %In context of nominal this is the set of terms.
 \newcommand{\pos}[1]{\mathtt{pos}(#1)}
+\newcommand{\basicPos}[1]{\overline{\mathtt{pos}}(#1)}
+\newcommand{\varPos}[1]{\mathtt{varPos}(#1)}
+\newcommand{\parPos}[2]{#1\,||\,#2} %Pararell positions
 
 \newcommand{\narrow}{\mathbin{\rightsquigarrow}}
 \newcommand{\trs}{\mathcal{R}}
@@ -31,7 +34,7 @@
 
 \newcommand{\fresh}{\#}
 
-
+%Paralel Positions
 
 \newcommand\restr[2]{{% we make the whole thing an ordinary symbol
 \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
