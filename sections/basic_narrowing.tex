@@ -1,0 +1,132 @@
+% !TeX root = ../main.tex
+\section{Basic Narrowing}
+We now study a restricted form or narrowing, called basic narrowing. It was introduced by Hullot on his famous paper \textit{Canonical Forms and Unification} (\cite{hullot:cfunif}). Intuitively, basic narrowing makes a restriction on the possible positions a redex can be contracted. The idea is that one can not narrow positions that were introduced by some other narrow substitution. Hullot shows in \cite{hullot:cfunif} that basic narrowing is still complete for $E$-unification problems such that $E$ can be represented by a convergent term rewrite system $\trs$.
+
+This restriction was motivated by the very large search space of standard narrowing. The search space for narrowing is quite large in applications and this is a step back when solving equations on \textit{resolutions steps}\footnote{We study some applications of narrowing in solving SLD-resolution later in the report.} (based on narrowing) and automated reasoning. For example, in Example \ref{example:app-concat-standard-narrowing} the search space is infinity.
+
+To facility the exposition and center our attention only on solving equations making clear the role of TRS in reductions we temporally abandon the transformation rules approach, we return to this approach later when considering improvements of basic narrowing.
+
+We do this by assuming that $\trs$ contain the additional rewrite rule $eq(x,x) \contr true$ and consider terms of the following form:
+\begin{itemize}
+	\item terms that do not contain any occurrences of $eq$ and $true$
+	\item terms $eq(s,t)$ with $s,t$ satisfying the previous condition
+	\item the constant $true$
+\end{itemize}
+Terms of the second form are called goals. It should be noted that confluence, completeness and semi-completeness are retained under the addition of the rule $eq(x,x) \contr true$.
+
+\begin{definition}
+	\begin{enumerate}
+		\item Let $t_1 \narrow_{[p_1, l_1 \contr r_1, \sigma_1]} t_2 \narrow_{[p_2, l_2 \contr r_2, \sigma_2]} \cdots \narrow_{[p_{n-1}, l_{n-1} \contr r_{n-1}, \sigma_{n-1}]} t_n$ be a narrowing derivation. Define sets of positions $B_1, \cdots, B_n$ inductivelly as follows:
+		      \begin{align*}
+			      B_1     & = \basicPos{t_1}                                            \\
+			      B_{i+1} & = \mathbb{B}(B_i, p_i, r_i) \qquad \text{for } 1 \leq i < n
+		      \end{align*}
+		      Where $\mathbb{B}(B_i, p_i, r_i) := (B_i \setminus \{ q \in B_i \mid p_i \leq q \}) \cup \{ p_iq \mid q \in \basicPos{r_i} \}$. Positions in $B_i$ are referred to as basic positions and positions in $\basicPos{t_i} \setminus B_i$ are called non-basic positions. Call the above narrowing derivation basic if $p_i \in B_i$ for $1 \leq i \leq n$.
+		\item A rewrite sequence
+		      $$t_1 \contr_{[p_1, l_1 \contr r_1, \sigma_1]} t_2 \contr_{[p_2, l_2 \contr r_2, \sigma_2]} \cdots \contr_{[p_{n-1}, l_{n-1} \contr r_{n-1}, \sigma_{n-1}]} t_n$$
+		      is based on a set of positions $B_1 \subseteq \basicPos{t_1}$ if $p_i \in B_i$ for $1 \leq i < n$ with $B_2, \dots, B_n$ defined as above.
+	\end{enumerate}
+\end{definition}
+
+Now our problem is to prove the completeness of $E$-unification based on basic narrowing. The idea is to do what have been done so far: lift basic $\contr$-derivations to basic $narrow$-derivations using the lifting lemma. But first one need to guarantee that $\contr$-derivations are indeed basic before they are lifted by lifting lemma. However, this is not as easy as seems to be.
+
+\begin{example}[\cite{10.1007/3-540-51564-X_51} Example 3]\label{example:hullot-counter-ex}
+    Let $\trs = \{ f(x,b) \contr g(x), a \contr b \}$. We can see that a reduction sequence
+    $$f(a,b) \contr f(b,b) \contr g(b)$$
+    is based on $\basicPos{t}$, but
+    $$f(a,b) \contr g(a) \contr g(b)$$
+    is not.
+\end{example}
+
+To do the task we allready have stablished, Hullot asserts in \cite{hullot:cfunif} the following Lemma, (Lemma 3 in his paper).
+\begin{lemma}[Hullot, Lemma 3]
+    Let $t = s\sigma$, with some normalized substitution $\sigma$. Every $\contr$-reduction from $t$ is based on $\basicPos{s}$.
+\end{lemma}
+
+However the second sequence in Example \ref{example:hullot-counter-ex} does not satisfy the Hullot assertion. Therefore his proof of the completeness of $E$-unification based on basic narrowing does not work.
+
+In the first sequence of Example \ref{example:hullot-counter-ex}, the innermost redexes only are contracted. On the other hand, in the second one, $f(a,b)$ is selected and it is not an innermost redex. It contains the redex $a$ as a subterm. This selection makes a counter example for Lemma 3 in Hullot paper. In general, when we construct a basic reduction sequence from a term $t$ to $\trsNF{t}$, the terms introduced by the substitution at each reduction need to be in normal form because they may not be selected as redexes. From these considerations, Yamamoto (\cite{10.1007/3-540-51564-X_51}) made the suggestion that the innermost occurrence should essentially owe to the completeness of $E$-unification on basic narrowing. We summarize this the next definition.
+
+\begin{definition}
+	An innermost redex does not contain (as a subterm) any other redexes. In an innermost reduction sequence, only innermost reduction sequences are contracted.
+\end{definition}
+
+Now, with innermost selection of redexes we can guarantee that reductions sequence is basic.
+
+\begin{proposition}\label{proposition:innermost-based-on-t}
+	Let $\trs$ be a TRS and $\sigma$ a normalized substitution. Every innermost reduction sequence starting from $t\sigma$ is based on $\basicPos{t}$.
+	\begin{proof}
+		The proof is by induction on the lenght of the reduction. For the base case suppose we have a sequence
+		$$ t\sigma = t_1 \contr_{[p_1, l_1 \contr r_1, \sigma_1]} t_2 $$
+		We need to show that $p_1 \in B_1 = \basicPos{t_1}$. It follows that any redex of $t_1$ must be in $\basicPos{t_1}$ since $\sigma$ is a normalized substitution.
+		Now consider the reduction of lenght $n$ starting from $t_1$, that is,
+		$$t \sigma = t_1 \contr_{[p_1, l_1 \contr r_1, \sigma_1]} t_2 \contr_{[p_2, l_2 \contr r_2, \sigma_2]} \cdots \contr_{[p_{n-1}, l_{n-1} \contr r_{n-1}, \sigma_{n-1}]} t_n$$
+		By induction on $i$ we must show that $\restr{p_i}{p}$ is a normal form for all $p$ in $\pos{t_i}\setminus B_i$ for $1 \leq i \leq n$. Suppose the statement holds for $i = 1, \dots, m$ and let $p \in \pos{t_{m+1}} \setminus B_{m+1}$. There are two possible cases: $\parPos{p}{p_m}$ or $p_m \leq p$. Note that the case $p < p_m$ is impossible since this would imply $p \in B_{m+1}$, because $B_m$ is closed under prefix and $p_m \in B_m$.
+		\begin{enumerate}
+			\item If $\parPos{p}{p_m}$ then $p \notin B_m$ by construction. So $p \in \pos{t_m} \setminus B_m$ and $\restr{t_{m+1}}{p} = \restr{t_m}{p}$ and the induction hypothesis give us the result.
+			\item Suppose $p_m \leq p$, then there exists positions $q \in \varPos{r_m}$ and $q'$ such that $p = p_m q q'$ (otherwise, $p \in B_{m+1})$. Hence
+			      $$\restr{t_{m+1}}{p} = \restr{r_m\sigma_m}{qq'} = \restr{x\sigma_m}{q'}$$
+			      where $x$ is a variable in $r_m$ at position $q$. So $\restr{t_{m+1}}{p}$ is a proper subterm of $l_m\sigma_m$ and since $t_m \contr_{[p_m, l_m \contr r_m, \sigma_m]}t_{m+1}$ is a innermost reduction step $\restr{t_{m+1}}{p}$ is a normal form.
+		\end{enumerate}
+	\end{proof}
+\end{proposition}
+
+If $\trs$ is convergent, then $\trs$ has the property that there exists an innermost reduction sequence from every sequence from every term $t$ to $\trsNF{t}$. However, this is not true in general, in what follows we work under the hypothesis that $\trs$ satisfy this property.
+
+\begin{definition}
+	A TRS $\trs$ is normalizing with innermost reductions if for every term there exists an innermost reduction sequence to its normal form.
+\end{definition}
+
+\begin{theorem}
+	If $\trs$ is confluent and normalizing with innermost reductions then basic narrowing is complete for $\trs$-unification problems.
+	\begin{proof}
+		Suppose that $s\sigma \eqUnif{\trs} t\sigma$. Let $\trsNF{\sigma}$ be the normal form of $\sigma$. Notice that $\sigma \eqUnif{\trs} \trsNF{\sigma}$ and $\trsNF{\sigma} \eqUnif{\trs} t\trsNF{\sigma}$. Confluence of $\trs$ yields the joinability of $s\trsNF{\sigma}$ and $t \trsNF{\sigma}$. Hence there exists a rewrite sequence $eq(s,t)\trsNF{\sigma} \stc true$. We may assume that this reduction is innermost, since $\trs$ is normalizing with innermost reduction.
+
+		By the above proposition, this reduction is based on $\basicPos{eq(s,t)}$. Now by the lifting lemma we can lift this $\contr$-derivation to a narrowing derivation $eq(s,t) \narrow_{\gamma}^{*} true$ (considering $V = \vars{s,t}$) such that in each step we use the same rewrite rules at the same positions. It follows that the narrowing derivation $eq(s,t) \narrow_\gamma^* true$ is basic and based on $B_1 = \basicPos{eq(s,t)}$.
+
+		It remains to show that $\gamma \leq^V \trsNF{\sigma}$. In fact, the lifting lemma give us a substitution $\eta$ such that $\gamma \eta \eqUnif{E}^V \trsNF{\sigma}$. So, the result follows.
+	\end{proof}
+\end{theorem}
+
+\begin{remark}
+	We can still extend the left (right) narrowing rules from tables \ref{table:unify_inf_rules} and \ref{table:narrowing_inf_rules} by using the same results on completeness. The completeness proof for the case is exactly as in \ref{theorem:narrowing-completeness} with minor changes about innermost reductions. The second form of solving equations using narrowing has been chosen just for a matter of presentation.
+\end{remark}
+
+We can run some tests to see how basic narrowing cut-down the search space of solving equations modulo an equational theory $E$. In fact, remember from Example \ref{example:app-concat-standard-narrowing} that the equation $eq(\appFunc{\appFunc{x}{y}}{z}, \nilList)$ have an infinite search space with standard narrowing. Compare this with the figure below.
+
+\begin{landscape}
+	\thispagestyle{empty}
+	\hrule
+	\begin{figure}[!ht]
+		\begin{displaymath}
+			\xymatrix{
+				& eq(\appFunc{\appFunc{x}{y}}{z}, \nilList) \ar@{~>}[dr] \ar@{~>}[dl] \\
+				eq(\appFunc{x_1}{z},\nilList) \ar@{~>}[d] & & eq(\appFunc{w_1 \cdot \appFunc{y_1}{u_1}}{z}, \nilList) \ar@{~>}[d]\\
+				eq(x_2,\nilList) \ar@{~>}[d] & & eq(\appFunc{w_1 \cdot x_5}{z}, \nilList) \ar@{~>}[d]\\
+				eq(\nilList, \nilList) \ar@{~>}[d]& & eq(w_1 \cdot \appFunc{x_1}{z}, \nilList) \ar@{~>}[d]\\
+				true & & eq(x_6, \nilList) \ar@{~>}[d]\\
+				& & eq(\nilList, \nilList) \ar@{~>}[d]\\
+				& & true
+			}
+		\end{displaymath}
+		\caption{Derivation tree for the objective $eq(\appFunc{\appFunc{x}{y}}{z}, \nilList)$}
+		\label{figure:example:app:derivation-tree-basic-narrowing}
+	\end{figure}
+	\hrule
+	\vspace{1cm}
+	Note that now the derivation tree is even finite.
+\end{landscape}
+
+The reader may ask himself when such problems have finite search spaces. Hullot, \cite{hullot:cfunif} gives a beautiful result in this matter.
+
+\begin{proposition}[Hullot, \cite{hullot:cfunif} Proposition 1]
+	Let $\trs = \{ l_1 \contr r_i \}$, $1 \leq i \leq n$ be a convergent term rewrite system such that any $\narrow$-derivation issue from any of the $r_i$'s terminates. Then any $\narrow$-derivation issue from any term terminates.
+\end{proposition}
+
+If the proposition above holds for $\trs$ then the rules (1)-(8) from tables \ref{table:unify_inf_rules} and \ref{table:narrowing_inf_rules} give a complete finite $\trs$-unification algorithm.
+
+In the next section, we give a better formulation of basic narrowing by means of transformation rules on sets of equations. We also study some efficiency rules for the performance of basic narrowing.
+
+For now, let us focus on completeness results.
+
+\subsection{Completeness Results}
