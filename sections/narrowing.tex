@@ -6,7 +6,7 @@ In this section, we discuss the use of narrowing techniques on solving equations
 We start the presentation by the so-called syntactic unification, i.e. $E$-unification with empty $E$. The transformation rules given below is due to Martelli and Montanari \cite{DBLP:books/el/RV01/BaaderS01}, the idea is to transform sets of equations to other sets of equations until a termination state is reached; that is, a solution state or a failure one.
 
 \begin{definition}
-	Let $\signature$ be a signature. An equational goal is a finite set of $\signature$-equations. Consider the special goal $\bot$ to denote a failed derivation state.
+	Let $\signature$ be a signature. An equational goal is a finite set of $\signature$-equations.
 \end{definition}
 
 \begin{table}[ht]
@@ -88,7 +88,9 @@ and $\sigma$ is given by $\sigma := \sigma_1\sigma_2 \cdots \sigma_{n-1}$, the c
 	Renaming of rewrite rules will be mandatory to ensure completeness of the narrowing approach. We always use a simple renaming such that $\vars{l} \cap \vars{s} = \emptyset$. This also extend to chains of narrowing derivations.
 \end{remark}
 
-Narrowing was first introduced in the context of $E$-unification. Fay \cite{fay1978first} and Hullot \cite{hullot:cfunif} shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing is a first attempt for solving equations in arbitrary equational theories $E$, with the requirement that they can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
+In a rewrite step $s \contr_[p, l \contr r, \sigma] t$ we always assume that the applied rewrite rule has no variables in common with $s$ and $\sigma$ is restricted to variables occurring in $l$. Consequently, $\sigma$ is a most general unifier of $\restr{s}{p}$ and $l$, and $t = s[r\sigma]_p = (s[r]_p)\sigma$. Hence rewriting can be viewed as a special case of narrowing.
+
+Narrowing was first introduced in the context of $E$-unification. Fay \cite{fay1978first} and Hullot \cite{hullot:cfunif} shows that narrowing is a complete method for solving equations in the theory defined by a confluent and terminating term rewriting system. In fact, narrowing derive from paramodulation (a first attempt for solving equations in arbitrary equational theories), but with the requirement that the theory can be represented as a convergent rewrite system. This approach also shows an important application for the Knuth-Bendix completion procedure: it prepares the way for solving equations over $E$, by delivering a complete TRS for $E$ (if possible).
 
 For this set of technology we give the name \textit{narrowing}, we now present the first application (of solving equations modulo $E$) in the framework of transformation rules on sets of equational goals.
 
@@ -127,22 +129,14 @@ Consider an equational theory $E$ specified by a convergent rewrite system $\trs
 
 In order to solve an equation $\ueq{s}{t}$ in an equational theory, corresponding to such a TRS, one can construct all possible narrowing derivations starting from the given equational goal until an equation $\ueq{s'}{t'}$ is obtained such that $s'$ and $t'$ are indeed syntactically unifiable. Note that, if this equational goal has a solution one always get a last equation of the form $\ueq{s}{s}$. We now investigate the semantic of solving equations using narrowing techniques.
 
-If $(\signature, E)$ is an equational theory, write $[s = t]_E$ for the set of all solutions to the equation $s = t$ modulo $E$. Moreover, if $X$ is some set of substitutions, let $X \sigma$ be the set $\{ \gamma \sigma \mid \gamma \in X \}$.
+If $(\signature, E)$ is an equational theory, write $[s = t]_E$ for the set of all solutions to the equation $s = t$ modulo $E$, i.e $\{\gamma \mid E \vdash s\gamma = t \gamma \}$. Moreover, if $X$ is some set of substitutions, let $\sigma X$ be the set $\{ \sigma \mid \gamma \in X \}$.
+
+By definition, solutions of the equation $s \eqUnif{E}{?}t$ are indeed closed under any ``variable assignment'', that is, they are closed under applications of substitutions. As explained in \cite{10.1007/BFb0032044} -- Section 2.4; for every substitution $\sigma$ we have $[s = t]_E \supseteq \{ \sigma \tau \mid E \vdash s\sigma \tau = t \sigma \tau  \} = \sigma [s\sigma = t \sigma]_E$, there is in principle the possibility of a stepwise determination of $[s = t]_E$ by means of ``specializations'' of the solution set. It consists of two kind of steps. The first one is as jus described guess a component $\sigma$ of the solution set and narrows $[s = t ]_E$ to $\sigma[s = t]_E$. The other one is: apply one equation of $E$ in one of the sides of the equation $s = t$ in hand. It is clear that this two types of steps do not change the solution set of the equation $s \eqUnif{E}{?} t$. In this way, by interating steps of the first and second type, we can finally get an equation that is syntactically unifiable, as described above.
 
 The narrowing relation was defined on terms rather equational goals. They act upon goals by the means of the above transformation rules.
 
-\begin{example}
-	Consider the TRS
-	\[
-		\trs =
-		\begin{cases}
-			\rho_1: 0 + x \rightarrow x \\
-			\rho_2: s(x) + y \rightarrow s(x + y)
-		\end{cases}
-	\]
-\end{example}
+We now turn our attention on completeness of narrowing. The propositions below will be useful to prove the various versions of ``Lifting Lemmas'' of this study.
 
-The propositions above will be useful to prove the various versions of ``Lifting Lemmas'' of this study.
 \begin{proposition}\label{proposition:varst}
 	If $t$ is a term and $\gamma$ a substitution then $\vars{t\gamma} = (\vars{t} \setminus \dom{\gamma}) \cup \vran{\restr{\gamma}{\vars{t}}}$.
 \end{proposition}
@@ -152,7 +146,7 @@ The propositions above will be useful to prove the various versions of ``Lifting
 \end{proposition}
 
 \begin{proposition}\label{proposition:change-of-domain-normalized}
-	Let $\trs$ be a TRS and suppose we have sets $A,B$ of variables and substituions $\gamma, \theta, \theta'$ such that the following consditions are satisfied:
+	Let $\trs$ be a TRS and suppose we have sets $A,B$ of variables and substitutions $\gamma, \theta, \theta'$ such that the following consditions are satisfied:
 	\begin{enumerate}
 		\item $\restr{\theta}{A}$ is $\trs$-normalized,
 		\item $\theta =^A \gamma \theta'$,
@@ -169,7 +163,7 @@ The propositions above will be useful to prove the various versions of ``Lifting
 	\begin{enumerate}
 		\item $s \narrow^{*}_{\gamma} s'$,
 		\item $t' = s'\theta'$,
-		\item $\restr{\theta}{V} = \gamma\theta'$,
+		\item $\theta =^V \gamma\theta'$,
 		\item $\theta'$ is $\trs$-normalized.
 	\end{enumerate}
 	Futhermore, we may assume that the narrowing derivation $s \narrow^{*}_{\sigma} s'$ and the rewrite sequence $t \stc t'$ employ the same rules at the same positions.
@@ -273,6 +267,59 @@ Now we have the following theorem which express the completeness of narrowing on
         Narrowing is complete for weakly normalizing and confluent Term Rewriting Systems.
     \end{corollary}
 \end{theorem}
+
+Now with the completeness result in hand, we can think of matters of efficiency. The first problem one will face when using narrowing techniques is its large search space. The search for possible derivations can even be an infinite set (see Example below). In order to reduce the search space of narrowing, Hullot \cite{hullot:cfunif} introduced the concept of basic narrowing. He showed that basic narrowing is complete for convergent TRSs. Motivated by the example below we study, in the next section, a restricted form of narrowing called basic narrowing.
+
+\begin{example}\label{example:app-concat-standard-narrowing}
+	Consider the TRS
+	\[
+		\trs =
+		\begin{cases}
+			\rho_1: \appFunc{\nilList}{x} \contr x \\
+			\rho_2: \appFunc{x \cdot y}{z} \contr x \cdot \appFunc{y}{z}
+		\end{cases}
+    \]
+    which represents the application function over $\cdot$ (conc function on lists). By a simple analysis we can see that $\trs$ is convergent.
+
+    \begin{landscape}
+        \thispagestyle{empty}
+        \hrule
+        \begin{figure}[h!]
+            \begin{displaymath}
+                \xymatrix{
+                     & \{ \appFunc{\appFunc{x}{y}}{z} = \nilList \} \ar@{=>}[dl]_>>{\sigma_1}_a \ar@{=>}[dr]^>>{\gamma_1}^b & & \\
+                    \{ \appFunc{x_1}{z} = \nilList \} \ar@{=>}[d]_>>{\sigma_2}  & & \{ \appFunc{w_1 \cdot \appFunc{y_1}{u_1}}{z} = \nilList \} \ar@{=>}[dl]_>>{\gamma_2}_c \ar@{=>}[dr]^>>{\gamma_3}^d & \\
+                    \{ x_2 = \nilList \} \ar@{=>}[d]_>>{\sigma_3} & \{ w_2 \cdot \appFunc{\appFunc{y_1}{u_1}}{u_2} = \nilList \} \ar@{=>}[d] & & \{ \appFunc{w_1 \cdot x_5}{z} = \nilList \} \ar@{=>}[d]_>>{\gamma_4}^e \\
+                    \{ \nilList = \nilList \} \ar@{=>}[d] & \vdots & & \{ w_1 \cdot \appFunc{x_5}{z} \} \ar@{=>}[d] \\
+                    \emptyset & & &  \vdots \\
+                }
+            \end{displaymath}
+            \caption{Derivation tree for the objective $\{ \appFunc{\appFunc{x}{y}}{z} = \nilList \}$}
+            \label{figure:example:app:derivation-tree}
+        \end{figure}
+        \hrule
+        \begin{table}[h!]
+            \caption{Narrowing steps}
+            \label{table:nice_table}
+            \centering
+            \begin{tabular}{l  c  c}
+            \cline{1-3}
+                step & rewrite rule & narrowing substitution \\
+            \hline
+            a & $\appFunc{\nilList}{x_1} \contr x_1$ & $[x / \nilList, y / x_1]$ \\
+
+            b & $\appFunc{w_1 \cdot v_1}{u_1} \contr w_1 \cdot \appFunc{v_1}{u_1}$ & $[x / w_1 \cdot v_1, y / u_1 ]$ \\
+
+            c & $\appFunc{w_2 \cdot v_2}{u_2} \contr w_2 \cdot \appFunc{v_2}{u_2}$ & $[w_1 / w_2, v_2 / \appFunc{v_1}{u_1}, z / u_2]$ \\
+
+            d & $\appFunc{\nilList}{x_5} \contr x_5$ & $[v_1 / \nilList, u_1 / x_5]$ \\
+
+            e & $\appFunc{w_3 \cdot v_3}{u_3} \contr w_3 \cdot \appFunc{v_3}{u_3}$ & $[w_3 / w_1, v_3 / x_5, u_3 / z]$ \\
+            \hline
+            \end{tabular}
+        \end{table}
+    \end{landscape}
+\end{example}
 
 
 
