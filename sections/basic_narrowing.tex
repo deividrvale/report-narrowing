@@ -126,8 +126,38 @@ The reader may ask himself when such problems have finite search spaces. Hullot,
 
 If the proposition above holds for $\trs$ then the rules (1)-(8) from tables \ref{table:unify_inf_rules} and \ref{table:narrowing_inf_rules} give a complete finite $\trs$-unification algorithm.
 
-In the next section, we give a better formulation of basic narrowing by means of transformation rules on sets of equations. We also study some efficiency rules for the performance of basic narrowing.
+In the next section, we give a better formulation of basic narrowing by means of transformation rules on sets of equations. We also study some efficiency rules for the performance of basic narrowing. For now, let us focus on completeness results.
 
-For now, let us focus on completeness results.
+In \cite{10.1007/3-540-51564-X_51} Yamamoto made the following conjecture:
+\begin{center}
+    \textit{Basic narrowing is complete for semi-convergent TRSs}.
+\end{center}
+This was conjectured to be true by many other authors. But in 1994 Middeldorp and Hamoen in \cite{Middeldorp1994} give a counter example for this conjecture.
 
-\subsection{Completeness Results}
+Consider the TRS
+\begin{displaymath}
+    \trs =
+	\begin{cases}
+		f(x) & \contr g(x,x)                               \\
+        a & \contr b \\
+        g(a,b) & \contr c \\
+        g(b,b) & \contr f(a)
+	\end{cases}
+\end{displaymath}
+
+It follows that $\trs$ is confluent and weakly normalizing, hence semi-convergent. However, the goal $eq(f(a),c)$ cannot be solved by basic narrowing. The figure below shows all narrowing derivations starting from this goal. Recall that non-basic positions are marked by underline. Since the goal $eq(f(a),c)$ is variable-free, all narrowing steps are also rewrite steps. The steps marked by a star are non-basic because each of them narrows an occurrence of the term $a$ introduced by the narrowing substitution $[x / a]$.
+\begin{figure}[!ht]
+    \begin{displaymath}
+        \xymatrix{
+            & eq(f(a),c)\ar@{~>}[dr] \ar@{~>}[dl] &  &  &  \\
+            eq(f(b),c) &  & eq(g(\underline{a},\underline{a}), c) \ar@{~>}[dl]^{\star} \ar@{~>}[dr]_{\star} &  & \\
+            & eq(g(b,\underline{a}),c) \ar@{~>}[dr]^{\star} & & eq(g(\underline{a},b),c) \ar@{~>}[dl]_{\star} \ar@{~>}[dr] &\\
+            & & eq(g(b,b),c) \ar@{~>}@/^10pc/[lluuur] & & eq(c,c) \ar@{~>}[d]\\
+            & &  & & true
+        }
+    \end{displaymath}
+    \caption{Derivation tree for the objective $eq(f(a),c)$}
+    \label{figure:counterexample}
+\end{figure}
+
+Note that (from figure above) all successful derivation step passes through a marked derivation step, basic narrowing is unable to solve the normalized goal $eq(g(x,x),c)$ since the only basic narrowing
