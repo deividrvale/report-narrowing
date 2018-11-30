@@ -132,7 +132,7 @@ In \cite{10.1007/3-540-51564-X_51} Yamamoto made the following conjecture:
 \begin{center}
     \textit{Basic narrowing is complete for semi-convergent TRSs}.
 \end{center}
-This was conjectured to be true by many other authors. But in 1994 Middeldorp and Hamoen in \cite{Middeldorp1994} give a counter example for this conjecture.
+This was conjectured to be true by many other authors. However, in 1994 Middeldorp and Hamoen in \cite{Middeldorp1994} gave a counterexample for this conjecture.
 
 Consider the TRS
 \begin{displaymath}
@@ -160,4 +160,4 @@ It follows that $\trs$ is confluent and weakly normalizing, hence semi-convergen
     \label{figure:counterexample}
 \end{figure}
 
-Note that (from figure above) all successful derivation step passes through a marked derivation step, basic narrowing is unable to solve the normalized goal $eq(g(x,x),c)$ since the only basic narrowing
+Note that (from figure above) all successful derivation step passes through a marked derivation step, basic narrowing is unable to solve the normalized goal $eq(g(x,x),c)$ since the only basic narrowing step starting from $eq(g(x,x),c)$ produces the goal $eq(f(a),c)$, this follows from  $eq(g(x,x),c) \narrow_{[x/a]} eq(f(a),c)$. In particular, basic narrowing is not complete for confluent TRS with respect to normalizable substitutions, contrary to what was generally believed.

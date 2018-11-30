@@ -1,0 +1,68 @@
+% !TeX root = ../main.tex
+\section{Conditional Term Rewrite Systems}
+In this section, we introduce some basic notions on \textit{conditional term rewriting systems}. This type of rewriting was first conceived to reason formally about abstract data types (in the context of algebraic specification). Also, and more important to the study we pretend to carry on, conditional rewriting plays an important role in the integration of functional and logic programming paradigms. The reader is referred to [enno, Chapter 7] for most of the estatments we just give here without a proof and for a more detailed discussion on the subject.
+
+\begin{definition}
+    A \textit{conditional term rewritig system} (abbreviated as CTRS) is a pair $(\signature, \trs)$ consisting of a signature $\signature$ and a set $\trs$ of \textit{conditional rewrite rules}. Each of these rewrite rules is of the form $l \contr r \Leftarrow s_1 = t_1, \dots, s_n = t_n$ with $l, r, s_i, t_i \in \terms$, for all $1 \leq i \leq n$. The term $l$ may not be a variable.
+\end{definition}
+
+Most of the time we abbreviate the conditional rule $l \contr r \Leftarrow s_1 = t_1, \dots, s_n = t_n$ as just $l \contr r \Leftarrow c$. If a rewrite rule has no conditions, we write $l \contr r$, require $\vars{l} \supseteq \vars{r}$, and call $l \contr r$ an unconditional rewrite rule.
+
+As in \cite{Middeldorp1994}, rewrite rules $l \contr r \Leftarrow c$ will be classified according to their distribution of variables among $l, r$, and $c$, as follows:
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{c | l }
+    \cline{1-2}
+        Type & Requirement \\
+    \hline
+    1 & $\vars{r} \cup \vars{c} \subseteq \vars{l}$\\
+    2 & $\vars{r} \subseteq  \vars{l}$ \\
+    3 & $\vars{r} \subseteq \vars{l} \cup \vars{c}$ \\
+    4 & No restrictions
+    \end{tabular}
+\end{table}
+
+\begin{definition}
+    For every CTRS $(\signature,\trs)$ we associate the system $(\signature, \trs_u)$, where
+    $$\trs_u := \{ l \contr r \mid l \contr r \Leftarrow c \in \trs \} $$
+\end{definition}
+
+We can interpret $=$ in the rules of a conditional term in different ways, wich leads to different rewrite relations.
+
+\begin{definition}
+    \begin{enumerate}
+        \item In an \textit{orientend} CTRS $(\signature, \trs)$ the $=$ symbol in the conditions of the rewrite rules is interpreted as \textit{reachability}, i.e. $l \contr r \Leftarrow s_1 \contr t_1, \dots, s_n \contr t_n$.
+        \item A \textit{normal} CTRS $(\signature, \trs)$ is an orientend CRTS in which the rewrite rules are subjected to the additional constraint that every $t_j$ is a ground normal form with respect to $\trs_u$. This rewrite rules will also be written as $l \contr r \Leftarrow s_1 \contr t_1, \dots, s_n \contr t_n$.
+        \item In a \textit{join} CTRS $(\signature, \trs)$ the $=$ symbol in the conditions of the rewrite rules is interpreted as \textit{joinability}. Rewrite rules of a join CTRS will be written as $l \contr r \Leftarrow s_1 \downarrow t_1, \dots, s_n \downarrow t_n$.
+        \item Interpreting the $=$ symbol in the conditions as \textit{conversion} leads to semiequational CTRSs.
+    \end{enumerate}
+\end{definition}
+
+From now on we just consider \textit{oriented} CTRSs. Let us formally define the rewrite relation induced by this type of CTRS.
+\begin{definition}
+    Let $\trs$ be a CTRS. We inductively define \textit{unconditional} TRSs $\trs_n$ for $n \in \mathbb{N}$ by:
+    \begin{align*}
+        \trs_0 &= \emptyset \\
+        \trs_{n+1} &= \{ l\sigma \contr r\sigma \mid l \contr r \Leftarrow s_1 \contr t_1, \dots, s_n \contr t_n \in \trs \text{ and } \\
+        &s_j\sigma \contr_{\trs_n}^* t_j \sigma \text{ for all } j \in \{ 1, \dots, n \} \}
+    \end{align*}
+\end{definition}
+
+The rewrite relation associated with a CTRS $\trs$ is defined by:
+\begin{displaymath}
+    \contr_\trs :=  \bigcup\limits_{n \in \mathbb{N}} \contr_{\trs_n}
+\end{displaymath}
+
+We say that $s \contr_{\trs_{n+1}} t$ iff there exists a rewrite rule $\rho : l \contr r \Leftarrow s_1 \contr t_1, \dots, s_n \contr t_n$ in $\trs$, a substitution $\sigma$, a position $p \in \pos{s}$ such that $\restr{s}{p} = l \sigma$ and $t = s[r\sigma]_p$, and $s_j \sigma \stc_{\trs_n} t_j \sigma$ for all $1 \leq j \leq n$. We say that $s \contr_\trs t$ is a rewrite step or reduction step using $\trs$ at the redex $l\sigma$. We also ommits the subscript $\trs$ when $\trs$ is meaniful.
+
+The depth of a rewrite step $s \contr t$ is the least $n$ such that $s \contr_{\trs_n} t$. This notion also extends to reduction sequences $s \stc t$.
+
+In order to work on conditional narrowing later we define the following notion.
+\begin{definition}
+    Let $(\signature, \trs)$ be a join CTRS.We assume that $eq$ and $true$ are function symbols that do not occur in $\sigma$. For every rewrite rule $\rho: l \contr r \Leftarrow s_1 \downarrow t_1, \dots, s_n \downarrow t_n$ in $\trs$, we define:
+    $$n(\rho) := eq(s_1, t_1) \contr true, \dots, eq(s_n, t_n) \contr true$$
+    Then define $$n(\trs) = \{ eq(x,x) \contr true \} \cup \bigcup\limits_{\rho \in \trs} \{ n(\rho) \}.$$
+\end{definition}
+Note that $n(\trs)$ is a normal CTRS. We will use it later on to define conditional narrowing.
+
