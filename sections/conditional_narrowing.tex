@@ -1,0 +1,73 @@
+% !TeX root = ../main.tex
+\section{Conditional Narrowing}
+Conditional narrowing is our next step on building tools for the main goal of our study, that is, the integration of functional and logic languages.
+
+\begin{definition}
+    If $c$ is a finite sequence of equations $s_1 = t_1, \dots, s_n = t_n$ then $\overline{c}$ denotes the multiset $\{ eq(s_1, t_1), \dots, eq(s_n, t_n) \}$ wich will be called \textit{goal clause}. If a \textit{goal clause} is the multiset consisting of a finite number of ``true''s then we denote it as $\top$.
+\end{definition}
+
+Conditional narrowing is definte over goal clauses instead of being defined over terms directly, as in the unconditional case. To simplify notation, call a generic goal clause $eq(s_1, t_1)$ just as an expression $e$.
+
+\begin{definition}
+    Let $\trs$ be a CTRS. A goal clause $S$ \textit{conditionally narrows} to a goal clause $T$ iff there exists a goal $e \in S$, a non-variable position $p \in \basicPos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a conditional rewrite rule in $\trs$, and a substitution $\sigma$ such that:
+    \begin{enumerate}
+        \item $\sigma$ is a most general unifier of $\restr{e}{p}$ and $l$,
+        \item $T = (S \setminus \{e\})\sigma \cup \{ e[r]_p \cup \overline{c} \}\sigma$
+    \end{enumerate}
+    We say that $S \narrow_{[e, p, \rho, \sigma]} T$ or simply $S \narrow_\sigma T$, when the other information is clear from the context.
+\end{definition}
+
+\begin{example}
+    Consider the TRS
+    \begin{displaymath}
+        \trs =
+        \begin{cases}
+            even(0) & \contr T                               \\
+            even(s(x)) & \contr odd(x) \\
+            odd(x) & \contr T \Leftarrow even(x) = F \\
+            odd(x) & \contr F \Leftarrow even(x) = T
+        \end{cases}
+    \end{displaymath}
+    The picture below describe a solution for the goal $eq(even(s(y)), T)$.
+\end{example}
+
+\begin{definition}
+    Let $\trs$ be a CTRS and $S$ a goal clause. We write $\trs \vdash S$ iff $S \stc_R \top$. The set of all such goals is denoted by $\mathcal{G}_\top(\trs)$ or simply $\mathcal{G}_\top$.
+\end{definition}
+
+If $\trs$ is confluent then $\mathcal{G}_\top$ is closed under $\contr_\trs$. The level of a goal clause $T \in \mathcal{G}_\top$ is the least $n$ such that $\trs_n \vdash T$.
+
+Now we prove soundness of conditional narrowing.
+
+\begin{theorem}
+    Let $\trs$ be a CTRS and $S$ a goal clause. If $S \narrow_\sigma^* T$ then $\trs \vdash S \sigma$.
+    \begin{proof}
+        The proof goes by induction on the length of the narrowing derivation from $S$ to $T$. The case of zero length is trivial. Suppose
+        $$S \narrow_{[e, \rho, \sigma_1]} S_1 \narrow_{\sigma_2}^* T$$
+        where $\rho : l \contr r \Leftarrow c$ is a variant of a rewrite rule from $\trs$. Let $\sigma = \sigma_1 \sigma_2$. By definition,
+        $$S_1 = (S \setminus {e})\sigma_1 \cup \{ e[r]_p \cup \overline{c} \}\sigma_1.$$
+        The induction hypothesis yields $\trs \vdash S_1 \sigma_2$. Hence, we have both $\trs \vdash (S \setminus {e}) \sigma \cup \{e[r]_p \cup \overline{c} \}\sigma$ and $\trs \vdash \overline{c} \sigma$. From the last observation we have that $\overline{c}\sigma \stc_\trs \top$, so all constraints of the rule $\rho : l \contr r \Leftarrow c$ is solved. So $l\sigma \contr_\trs r \sigma$ and therefore:
+        $$S \sigma \contr_\trs (T \sigma \setminus \{ e\sigma \}) \cup \{ (e\sigma)[r\sigma]_p \}.$$
+        Observe that $(S \sigma \setminus \{ e\sigma \}) \cup \{ (e\sigma)[r\sigma]_p \} = (S \setminus \{e\})\sigma \cup \{ e[r]_p \}\sigma$. Hence,
+        $$S \sigma \contr_\trs S_1\sigma \stc_\trs \top$$
+        Finally, $\trs \vdash S \sigma$, as requested.
+    \end{proof}
+\end{theorem}
+
+Now the main goal is prove a completeness result for conditional narrowing. The ideia is still the same: compare narrowing steps with a kind of rewrite relation and lift rewrite steps to narrowing steps. Remember that early we have defined narrowing on terms rather than equational goals. In order to compare conditional rewriting and conditional narrowing, Backmayr [2] introduced a kind of rewriting relation on goal clauses, he call it \textit{reduction without evaluating conditions}.
+
+\begin{definition}
+    Let $\trs$ be a CTRS and suppose that $S$ and $T$ are goal clasuses. We say $S \rewriteOnGoals_\trs T$ if there exists a goal $e \in S$, a postion $p \in \pos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a rewrite rule in $\trs$ and a substitution $\sigma$ such that
+    \begin{enumerate}
+        \item $\restr{e}{p} = l \sigma$
+        \item $T = (S \setminus \{e\}) \cup \{ e[r\sigma]_p \} \cup \overline{c} \sigma$.
+        \item $\trs \vdash \overline{c} \sigma$.
+    \end{enumerate}
+\end{definition}
+
+Note that this relation extend the action of the CTRS $\trs$ from terms to multisets of goal clauses. In this view, we also define the approximation $\rewriteOnGoals_\trs^n \; (n \geq 0)$ as in Definition \ref{definition:ctrs-approximation-rewrite-relation}, that is, $S \rewriteOnGoals_\trs^0$ if $T = (S \setminus \{e\}) \cup \{true\}$ with $e = eq(s,s) \in S$ and $S \rewriteOnGoals_\trs^n$ if $S \rewriteOnGoals_{[e, \rho, \sigma]} T$ with $\trs_n \vdash \overline{c} \sigma$. Again, $\rewriteOnGoals_\trs^n \subseteq \rewriteOnGoals_\trs^{n+1}$ for all $n \geq 0$ and
+$$\rewriteOnGoals_\trs := \bigcup\limits_{n \geq 0} \rewriteOnGoals_\trs^n.$$
+
+\begin{remark}
+    For 1-CTRS the relation $\rewriteOnGoals$ can be viewed as an special case of the conditional narrowing relation $\narrow$, but in general this is not true due to the possible extra variables in general conditional rewrite rules.
+\end{remark}

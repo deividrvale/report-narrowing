@@ -1,10 +1,10 @@
 % !TeX root = ../main.tex
 \section{Preliminaries}
-In this section we review the essential notions used in this work. The notation is consistent with major works on unification and rewriting. The reader is referred to \cite{bezem2003term} for a more detaled discussion on rewriting.
+In this section, we review the essential notions used in this work. The notation is consistent with major works on unification and rewriting. The reader is referred to \cite{bezem2003term} for a more detailed discussion on rewriting.
 
 A signature is a set $\signature$ of function symbols. Associated with every $f \in \signature$ there is a non-negative integer $n$, the arity of the function symbol $f$. We denote this by writing $f:n$. Function symbols of arity $0$ is called \textit{constants}. Futhermore, we assume existence of a countable infinite set of variables $\var$ disjoint from $\sigma$ and, inductively, construct the set $\terms$ of all terms built using the signature $\signature$ and the variables set $\var$ in the following way: every variable is a $\terms$-term and if $f:n \in \signature$ and $t_1, \cdots, t_n \in \terms$ then $f(t_1, \dots, t_n) \in \terms$. The set of all variables occurring in a term $t$ is denoted by $\vars{t}$.
 
-The structure of a term can be represented as a tree, where function symbols are nodes and arrows point to the arguments of the function.
+The structure of a term can be represented as a tree where function symbols are nodes and arrows point to the arguments of the function.
 \begin{figure}[!ht]
 	\begin{displaymath}
 		\xymatrix{
@@ -16,7 +16,7 @@ The structure of a term can be represented as a tree, where function symbols are
 	\caption{Tree representation of a term.}
 	\label{figure:tree-representation-of-a-term}
 \end{figure}
-A precise formalism of describing subterm occurrences of a term is obtained by the notion of position. The set $\pos{t}$ of positions of $t$ is inductively defined as follows:
+A precise formalism of describing subterm occurrences in a term is obtained by the notion of \textit{position}. The set $\pos{t}$ of positions of $t$ is inductively defined as follows:
 \begin{displaymath}
     \restr{t}{p} =
 	\begin{cases}
@@ -25,7 +25,7 @@ A precise formalism of describing subterm occurrences of a term is obtained by t
 	\end{cases}
 \end{displaymath}
 
-So positions are sequences of natural numbers denoting subterm occurrences. The set $\pos{t}$ is partitioned into two sets; $\basicPos{t}$, the set of all nonvariable positions of $t$, i.e., $\{p \in \pos{t} \mid \restr{t}{p} \notin \var \}$ and $\varPos{t}$, the set of all variable positions of $t$, $\{p \in \pos{t} \mid \restr{t}{p} \in \var \}$. If $p \in \pos{t}$ then $t[s]_p$ denotes the term obtained from $t$ by replacing the subterm of $t$ at position $p$ by $s$. Formally;
+So positions are sequences of natural numbers denoting subterm occurrences. The set $\pos{t}$ is partitioned into two subsets; $\basicPos{t}$, the set of all non-variable positions of $t$, i.e., $\{p \in \pos{t} \mid \restr{t}{p} \notin \var \}$ and $\varPos{t}$, the set of all variable positions of $t$, $\{p \in \pos{t} \mid \restr{t}{p} \in \var \}$. If $p \in \pos{t}$ then $t[s]_p$ denotes the term obtained from $t$ by replacing the subterm of $t$ at position $p$ by $s$. Formally;
 \begin{displaymath}
     t[s]_p =
 	\begin{cases}
@@ -35,7 +35,7 @@ So positions are sequences of natural numbers denoting subterm occurrences. The 
 \end{displaymath}
 Positions are partially ordered by the \textit{prefix order} $\leq$, i.e. $p \leq q$ if there exists an $r$ such that $q = p \cdot r$. We write $p < q$ for the strict part of $\leq$.
 
-A substitution $\sigma$ over $\terms$ is a function $\sigma : \var \to \terms$ such that the set $\{ x \in \var \mid x \sigma \neq x \}$ is finite. The application of a substitution $sigma$ to a term $t$ is defined by indcution on the structure of terms:
+A substitution $\sigma$ over $\terms$ is a function $\sigma : \var \to \terms$ such that the set $\{ x \in \var \mid x \sigma \neq x \}$ is finite. The application of a substitution $sigma$ to a term $t$ is defined by induction on the structure of terms:
 \begin{displaymath}
     t\sigma =
 	\begin{cases}
@@ -43,17 +43,17 @@ A substitution $\sigma$ over $\terms$ is a function $\sigma : \var \to \terms$ s
 		f(t_1\sigma, \dots, t_n\sigma) & \mbox{if } t = f(t_1, \dots, t_n)
 	\end{cases}
 \end{displaymath}
-The domain of a substitution $\sigma$ is the set of variables that is not mapped to themselfs by $\sigma$. That is;
+The domain of a substitution $\sigma$ is the set of variables that are not mapped to themselves by $\sigma$. That is;
 $$ \dom{\sigma} = \{x \in \var \mid x \sigma \neq x\}$$
 the \textit{range} of $\sigma$ is the set of terms
 $$ \ran{\sigma} = \bigcup\limits_{x \in \dom{\sigma}}  \{ x\sigma \},$$
 and the set of variables occurring in the range is $\vran{\sigma} := \vars{\ran{\sigma}}$.
 
-We represent substitutions in a more suitable way, that is, as a list of bidings from variables in the domain to terms in the range:
+We represent substitutions in a more suitable way: a list of bindings from variables in the domain to terms in the range:
 $$[x_1 / t_1, \dots, x_n / t_n ]$$
-The restriction of a substitution $\sigma$ to a set of variables $V$, denoted by $\restr{\sigma}{V}$, is the substitution wich is equal to the identity everywhere except over $V \cap \dom{\sigma}$, where it is equal to $\sigma$. Composition of two substitutions is written, $\sigma \theta$, and is defined by
+The restriction of a substitution $\sigma$ to a set of variables $V$, denoted by $\restr{\sigma}{V}$, is the substitution which is equal to the identity everywhere except over $V \cap \dom{\sigma}$, where it is equal to $\sigma$. Composition of two substitutions is written, $\sigma \theta$, and is defined by
 $$t\sigma \theta = (t\sigma)\theta.$$
-An algorithm for constructing the composition of two substitution represented as sets of bidings is as follows:
+An algorithm for constructing the composition of two substitutions represented as sets of bindings is as follows:
 \begin{enumerate}
     \item Apply $\theta$ to every term in $\ran{\sigma}$ to obtain $\sigma_1$;
     \item Remove from $\theta$ any biding $x/t$, where $x \in \dom{\sigma}$, to obtain $\theta_1$;
@@ -63,14 +63,13 @@ An algorithm for constructing the composition of two substitution represented as
 Two substitutions $\theta, \sigma$ are equal on the set of variables $V$, denoted by $\sigma =^V \theta$ iff $x \sigma = x \theta$, for all $x \in V$. A variable renaming is a bijective substitution on $\var$. A substitution $\sigma$ is \textit{more general} than a substitution $\tau$ on the set of variables $V$, denoted as $\sigma \iqoless[E][V] \tau$, if there exists a substitution $\eta$ such that $ \tau =^V \sigma \eta$.
 
 
-Two terms $s$ and $t$ are unifiable if there exists a substitution $\rho$, a so-called unifier of $s$ and $t$, such that $s \rho = t \rho$.
-We save the following result for later use.
+Two terms $s$ and $t$ are unifiable if there exists a substitution $\rho$, a so-called unifier of $s$ and $t$, such that $s \rho = t \rho$. Save the following result for later use.
 
 \begin{lemma}\label{lemma:unifiers-preserve-variables}
     If $\sigma$ is an idempotent most general unifier of two terms $s, t$ that have no variables in common then $\dom{\sigma} \cup \vran{\sigma} = \vars{s} \cup \vars{t}$.
 \end{lemma}
 
-Let $\sim$ be a binary relation on terms. We say that $\sim$ is closed under contexts if $s \sim t$ implies $u[s]_p \sim u[t]_p$, for all terms $u$ and positions $p \in \pos{u}$. The relation $\sim$ is closed under substitutions if $s\sigma \sim t\sigma$ whenever $s \sim t$, for all substitutions $\sigma$. A relation that is closed under contexts and substitutions is called a \textit{rewrite relation}.
+Let $\sim$ be a binary relation on terms. Say that $\sim$ is closed under contexts if $s \sim t$ implies $u[s]_p \sim u[t]_p$, for all terms $u$ and positions $p \in \pos{u}$. The relation $\sim$ is closed under substitutions if $s\sigma \sim t\sigma$ whenever $s \sim t$, for all substitutions $\sigma$. A relation that is closed under contexts and substitutions is called a \textit{rewrite relation}.
 
 An equation is an unordered pair $(s,t)$ of terms, written as $s = t$. Let $E$ be a set of equations. The rewrite relation $\contr_E$ generated by $E$ is defined as:
 \begin{center}
@@ -87,12 +86,12 @@ Two terms $s$ and $t$ are $E$-unifiable if there exists a substitution $\sigma$ 
     \item if $\tau$ is an $E$-unifier of $s$ and $t$ then there exists a $\sigma \in S$ such that $\sigma \iqoless[E][V] \tau$ where $V = \vars{s} \cup \vars{t}$.
 \end{enumerate}
 
-A \textit{rewrite rule} is a directed equation $l \contr r$ satisfying $l \notin \var$ and $\vars{r} \subseteq \vars{l}$. A \textit{variant} of a rewrite rule $l \contr r$ is an instance $l \sigma \contr r \sigma$, where $\sigma$ is a variable renaming substitution. A \textit{term rewriting system} is a set of rewrite rules. Somethimes we give an tag name to a rule and write $\trs = \{ \rho_1 : l \contr r, \cdots, \rho_k : l \contr r \}$ and acces the rule by his name.
+A \textit{rewrite rule} is a directed equation $l \contr r$ satisfying $l \notin \var$ and $\vars{r} \subseteq \vars{l}$. A \textit{variant} of a rewrite rule $l \contr r$ is an instance $l \sigma \contr r \sigma$, where $\sigma$ is a variable renaming substitution. A \textit{term rewriting system} is a set of rewrite rules. Sometimes we give a tag name to a rule, write $\trs = \{ \rho_1 : l \contr r, \cdots, \rho_k : l \contr r \}$ and access the rule by its name.
 
-The rewrite relation $\contr_\trs$ associated with the TRS $\trs$ is defined as follows: $s \contr_\trs t$ if there exists a variant $l \contr r$ of a rewrite rule in $\trs$, a position $p \in \pos{s}$, and a substitution $\sigma$ such that $\restr{s}{p} = l \sigma$ and $t = s[r \sigma]_p$. The subterm $l\sigma$ of $s$ is called a \textit{redex} (from reducible expression) and we say that the term $s$ reduces to $t$ by \textit{contracting} the redex $l \sigma$. We call $s \contr_\trs t$ a rewrite step. If we whant to be more specific about this contration we write: $s \contr_{[p, l \contr r, \sigma]}t$ to say that this reduction occurs at position $p$, using the variant $l \contr r$ and substitution $\sigma$.
+The rewrite relation $\contr_\trs$ associated with the TRS $\trs$ is defined as follows: $s \contr_\trs t$ if there exists a variant $l \contr r$ of a rewrite rule in $\trs$, a position $p \in \pos{s}$, and a substitution $\sigma$ such that $\restr{s}{p} = l \sigma$ and $t = s[r \sigma]_p$. The subterm $l\sigma$ of $s$ is called a \textit{redex} (from reducible expression) and we say that the term $s$ reduces to $t$ by \textit{contracting} the redex $l \sigma$. We call $s \contr_\trs t$ a rewrite step. If we want to be more specific about this contraction we write: $s \contr_{[p, l \contr r, \sigma]}t$ to say that this reduction occurs at position $p$, using the variant $l \contr r$ and substitution $\sigma$.
 
 The reflexive-transitive closure of $\contr$ is denoted by $\stc$. If $s \stc t$ we say that $s$ \textit{reduces} to $t$. The transitive closure of $\contr$ is denoted by $\contr^+$. The transitive-reflexive-symmetric closure of $\contr_\trs$ is called \textit{conversion} and is denoted by $\eqUnif{\trs}$. If $E$ is a set of equation correspoding to $\trs$, i.e. $E = \{ l = r \mid l \contr r \in \trs \}$ then $\eqUnif{E}$ and $\eqUnif{\trs}$ coincide. Two terms $t_1, t_2$ are \textit{joinable}, denoted by $t_1 \downarrow t_2$ if there exists a term $s$ such that $t_1 \stc s \stcR t_2$.
 
-A term $s$ is a normal form if there is no $t$ such that $s \stc t$. We also say that $s$ is normalized. A term $t$ has a normal form if there exists a rewrite sequence $s \stc t$ such that $t$ is a normal form. A TRS is weakly normaling if every term has a normal form and it is \textit{strongly normalizing} if there are no infinite reduction sequences $t_1 \contr t_2 \contr \cdots \contr t_i \contr t_{i+1} \cdots$. A term rewrite system $\trs$ is \textit{locally confluent} if all divergence $t_1 \contrR s \contr t_2$ is joinable. We also say $\trs$ is \textit{confluent} if every divergence sequence $t_1 \stcR s \stc t_2$ is joinable. A \textit{convergent} term rewriting system is a TRS such that it is confluent and strongly normaling. In this case, denote by $\trsNF{t}$ the unique normal form of $t$, for any term $t$.
+A term $s$ is a normal form if there is no $t$ satisfying $s \stc t$. Also, say $s$ is normalized. A term $s$ has a normal form if there exists a rewrite sequence $s \stc t$ and $t$ is a normal form. A TRS is weakly normaling if every term has a normal form and is \textit{strongly normalizing} if there are no infinite reduction sequences $t_1 \contr t_2 \contr \cdots \contr t_i \contr t_{i+1} \cdots$. A term rewrite system $\trs$ is \textit{locally confluent} if all divergence $t_1 \contrR s \contr t_2$ is joinable. We also say $\trs$ is \textit{confluent} if every divergence sequence $t_1 \stcR s \stc t_2$ is joinable. A term rewriting system is \textit{convergent} if it is confluent and strongly normaling. In this case, denote by $\trsNF{t}$ the unique normal form of $t$, for any term $t$.
 
 A substitution $\sigma$ is $\trs$-normalized if for all $x \in \dom{\sigma}, \; x \sigma$ is a $\trs$-normal form. A substitution $\sigma$ is normalizable if $x \sigma$ has a normal form, for every $x \in \dom{\sigma}$. When $\trs$ is convergent we denote by $\trsNF{\sigma}$ the unique normal form of $\sigma$.

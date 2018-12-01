@@ -1,6 +1,6 @@
 % !TeX root = ../main.tex
 \section{Conditional Term Rewrite Systems}
-In this section, we introduce some basic notions on \textit{conditional term rewriting systems}. This type of rewriting was first conceived to reason formally about abstract data types (in the context of algebraic specification). Also, and more important to the study we pretend to carry on, conditional rewriting plays an important role in the integration of functional and logic programming paradigms. The reader is referred to [enno, Chapter 7] for most of the estatments we just give here without a proof and for a more detailed discussion on the subject.
+In this section, we study some basic notions covering \textit{conditional term rewriting systems}. This type of rewriting was first conceived to reason formally about abstract data types (in the context of algebraic specification). Also, and more important to the study we pretend to carry on, conditional rewriting plays an important role in the integration of functional and logic programming paradigms. The reader is referred to \cite{Ohlebusch:2010:ATT:1965591} (Chapter 7) for most of the statements we just give here without a proof and a more detailed discussion on the subject.
 
 \begin{definition}
     A \textit{conditional term rewritig system} (abbreviated as CTRS) is a pair $(\signature, \trs)$ consisting of a signature $\signature$ and a set $\trs$ of \textit{conditional rewrite rules}. Each of these rewrite rules is of the form $l \contr r \Leftarrow s_1 = t_1, \dots, s_n = t_n$ with $l, r, s_i, t_i \in \terms$, for all $1 \leq i \leq n$. The term $l$ may not be a variable.
@@ -59,7 +59,7 @@ We say that $s \contr_{\trs_{n+1}} t$ iff there exists a rewrite rule $\rho : l 
 The depth of a rewrite step $s \contr t$ is the least $n$ such that $s \contr_{\trs_n} t$. This notion also extends to reduction sequences $s \stc t$.
 
 In order to work on conditional narrowing later we define the following notion.
-\begin{definition}
+\begin{definition}\label{definition:ctrs-approximation-rewrite-relation}
     Let $(\signature, \trs)$ be a join CTRS.We assume that $eq$ and $true$ are function symbols that do not occur in $\sigma$. For every rewrite rule $\rho: l \contr r \Leftarrow s_1 \downarrow t_1, \dots, s_n \downarrow t_n$ in $\trs$, we define:
     $$n(\rho) := eq(s_1, t_1) \contr true, \dots, eq(s_n, t_n) \contr true$$
     Then define $$n(\trs) = \{ eq(x,x) \contr true \} \cup \bigcup\limits_{\rho \in \trs} \{ n(\rho) \}.$$

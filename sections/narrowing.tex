@@ -112,7 +112,7 @@ Consider an equational theory $E$ specified by a convergent rewrite system $\trs
 \end{table}
 
 \begin{definition}
-    A \textit{narrowing derivation} is a finite set of equational goals in which each step is obtained by using the rules (1)-(8). It is a successful narrowing derivation if it last goal is empty.
+    A \textit{narrowing derivation} is a finite set of equational goals such that each step is obtained by using the rules (1)-(8). It is a successful narrowing derivation if it last goal is empty.
 \end{definition}
 
 \begin{example}
@@ -131,7 +131,7 @@ In order to solve an equation $\ueq{s}{t}$ in an equational theory, correspondin
 
 If $(\signature, E)$ is an equational theory, write $[s = t]_E$ for the set of all solutions to the equation $s = t$ modulo $E$, i.e $\{\gamma \mid E \vdash s\gamma = t \gamma \}$. Moreover, if $X$ is some set of substitutions, let $\sigma X$ be the set $\{ \sigma \mid \gamma \in X \}$.
 
-By definition, solutions of the equation $s \eqUnif{E}{?}t$ are indeed closed under any ``variable assignment'', that is, they are closed under applications of substitutions. As explained in \cite{10.1007/BFb0032044} -- Section 2.4; for every substitution $\sigma$ we have $[s = t]_E \supseteq \{ \sigma \tau \mid E \vdash s\sigma \tau = t \sigma \tau  \} = \sigma [s\sigma = t \sigma]_E$, there is in principle the possibility of a stepwise determination of $[s = t]_E$ by means of ``specializations'' of the solution set. It consists of two kind of steps. The first one is as jus described guess a component $\sigma$ of the solution set and narrows $[s = t ]_E$ to $\sigma[s = t]_E$. The other one is: apply one equation of $E$ in one of the sides of the equation $s = t$ in hand. It is clear that this two types of steps do not change the solution set of the equation $s \eqUnif{E}{?} t$. In this way, by interating steps of the first and second type, we can finally get an equation that is syntactically unifiable, as described above.
+By definition, solutions of the equation $s \eqUnif{E}{?}t$ are indeed closed under any ``variable assignment'', that is, they are closed under applications of substitutions. As explained in \cite{10.1007/BFb0032044} -- Section 2.4; for every substitution $\sigma$ we have $[s = t]_E \supseteq \{ \sigma \tau \mid E \vdash s\sigma \tau = t \sigma \tau  \} = \sigma [s\sigma = t \sigma]_E$, there is in principle the possibility of a stepwise determination of $[s = t]_E$ by means of ``specializations'' of the solution set. It consists of two kind of steps. The first one is as just described guess a component $\sigma$ of the solution set and narrows $[s = t ]_E$ to $\sigma[s = t]_E$. The other one is: apply one equation of $E$ in one of the sides of the equation $s = t$ in hand. It is clear that this two types of steps do not change the solution set of the equation $s \eqUnif{E}{?} t$. In this way, by interating steps of the first and second type, we can finally get an equation that is syntactically unifiable, as described above.
 
 The narrowing relation was defined on terms rather equational goals. They act upon goals by the means of the above transformation rules.
 
