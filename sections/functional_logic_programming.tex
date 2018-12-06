@@ -1,0 +1,97 @@
+% !TeX root = ../main.tex
+\section{The Intregration of Functions into Logic Programming}
+In this section we give a simple implementation of the amalgamation of functional and logic programming languages, for a more detailed and extended discussion the reader can see \cite{HANUS1994583}. The traditional approach to study a logic programming  is to define an \textit{operational semantics} of an abstract interpreter for the language. This interpreter is an idealized machine that performs the most simple and (sometimes) atomic\footnote{Example of atomic computation step of an idealized machine is the motion of the \textit{reading head} of the Turing Machine, defined by Alan Turing.} operations called \textit{computation}. The definition of computation is the core of the language because it says how one can reason about the behavior, power and limitation of the machine itself. It is by a mathematical definition that we can predict properties of machines and study the \textit{soundness} and \textit{completeness} of this idealized interpreter.
+
+The interest in the fusion of logic programming and functional programming language have the advantages from both the functional and logic point of view. In comparison with pure functional languages, functional logic languages have more expressive power due to the availability of features like function inversion, partial data structures, and logical variables. In comparison with pure logical languages, functional logic languages have a more efficent operational behavior since functions allow a more deterministic evaluation principles than pure logic predicates. These two principal consideration are the main initial motivation for integrating these two types of languages.
+
+The integration of functions into logic programming is very simple from a syntatic point of view. For this purpose, we have to extend a logic programming by the addition:
+\begin{enumerate}
+	\item A method to define new functions.
+	\item A possibility to use these functions inside programm clauses.
+\end{enumerate}
+
+In pure Prolog systems the only \textit{equality predicate} was the built-in syntatic equality. It is by adding the support for terms to be equal \textit{modulo} some equality predicate without being syntaticaly equal that one can define functional logic programs. For example, the following equational programm (equivalent to the TRS defined in the Example \ref{example:app-concat-standard-narrowing})
+
+\begin{align*}
+    \appFunc{\nilList}{x} &= x. \\
+    \appFunc{x \cdot y}{z} &= x \cdot \appFunc{y}{z}.
+\end{align*}
+Using this clauses for equality, we can prove that the term $\appFunc{[1,2]}{[3]}$ is equal to $[1,2,3]$.
+
+In order to give the precise semantics of functional logic programs and to fix some basic notions of logic programming we give some definitions below, for an introduction to logic programming one is refered to the classic book \cite{Clocksin:1984:PP:2343}.
+
+\begin{definition}
+    Let $\mathcal{P}$ be a set of \textit{predicate symbols} including the binary equality predicate $=$. A literal $p(t_1, \dots, t_n)$ consists of an n-ary predicate symbol applied to $n$ argument terms. An logical equation is a literal with $=$ as predicate symbol.
+\end{definition}
+
+\begin{definition}
+    A clause has the form
+    $$L_0 \leftarrow L_1, \dots, L_n$$
+    $(n \geq 0)$, where $L_0, L_1, \dots, L_n$ are literals. It is called (conditional) equation if $L_0$ is an equation, and unconditional equation if $L_0$ is an equation and $n = 0$.
+\end{definition}
+
+\begin{definition}
+    An \textit{programm objective} $G$ is a logic clause of the form:
+    $$\leftarrow B_1, \dots, B_m$$
+\end{definition}
+
+A clause $C$ is a \textit{variant} of another cause $D$ if it is an instance of $D$ by some variable renaming substitution $\theta$, i.e. $C = D \theta$.
+
+\begin{definition}
+    A \textit{functional logic program} $P$ is a finite set of clauses.
+\end{definition}
+
+Note that if we have to evaluate a function applied to ground terms during a unification in a functional logic program, we can simply evaluate this function call as in functional languages by applying appropriate rules to this call. This is called a rewrite step. But, if in the objective one have free variables, one needs to instantiate these variables to some terms and then operates on a rewrite step. This is called \textit{narrowing}, as we have seen in this report early.
+
+That introduce the needs of narrowing-based strategy on evaluation of functions defined inside a logic programming language. We already have stablished the conditions for this strategy be indeed an terminating procedure for the equational theory defined by this equational classes (in Proposition \ref{proposition:narrowing-as-E-unification}).
+
+The computation in pure Prolog languages is by the means of $SLD$-resolution. This is a complete and sound operational semantic for pure Prolog systems. This evaluation rule use standard unfication for solving the resolution of objectives with free variables. In order to extend logic programs we need to be able to compute reasoning with equations. This is done by incorporating narrowing-based unification procedure in the resolution step.
+
+We now se one example of this type of integration. (From the survey of Michael Hanus, see \cite{HANUS1994583}).
+
+\subsection{Contructor-Based Programs}
+In order to implement a functional logic language based on basic narrowing we have to manage the set of basic positions in program clauses and we try to apply all rules at all basic positions in each step. That yields a highly nondeterministic execution principle. On the other hand, pure functional languages deterministically select the position where the rules are applied next (innemost positions for \textit{eager evaluation} languages and outermost positions for \textit{lazy evaluation} languages). An approach to achieve similar strategy for functional logic languages is the partition of the signature of the program into a disjoint set $\constructors$ of constructors and a set $\defFunctions$ of defined functions.
+
+Constructors are used to build data types, whereas defined functions operate on these data types. Constructors terms are always in normal form, whereas defined functions are defined by equational rules. This enable us to use narrowing techniques on evaluation strategy. We call a term \textit{innersmost} if it has the form $f(t_1, \dots, t_n)$, with $f \in \defFunctions$ and $t_1, \dots, t_n$ are terms built with $\var$ and $\constructors$. A functional logic program is \textit{constructor-based} if the left-hand side of each rule is an innersmost term.
+
+In contructor-based functional logic programs, we can solve equations by innersmost narrowing strategy, as we already have stablished early in the report. To define a evaluation principle for this kind of logic functional programs, one needs to take care of some issues. For instance, innersmost evaluation only give raise to an incomplete semantics as the example below shall demonstrate.
+\begin{example}
+    Consider the following rules where $a$ is a constructor:
+    \begin{align*}
+        f(x) &= a. \\
+        g(a) &= a.
+    \end{align*}
+    Since $f$ is a constant function mapping all inputs to $a$, the identity substitution $[]$ is a solution of the equation $f(g(x)) = a$. However, the only innersmost narrowing derivation is
+    $$f(g(x)) = a \narrow_{[x/a]} f(a) = a \narrow_{[]} a = a \narrow \top$$
+    i.e. innemost narrowing computes only the more specific solution $[x / a]$.
+\end{example}
+
+To the operational semantics of constructor-based programs be complete, one need to impose several conditions in the forms of functions defined by clauses. The most important one is: innersmost narrowing evaluation is complete if all functions are totally defined, i.e. the only irreducible ground terms are constructors terms. The next example (\cite{HANUS1994583}), shows the incompleness of innersmost narrowing in the presence of partial functions.
+
+\begin{example}
+    Consider the following rules, where $a$ and $b$ are constructors:
+    \begin{align*}
+        f(a, Z) &= a. \\
+        g(b) &= b.
+    \end{align*}
+    If we want to solve the equation $f(X, g(X)) = a$, then there is the sucessful narrowing derivation
+    $$f(X, g(X)) = a \narrow_{[X / a]} a = a$$
+    by applying the first rule to the term $f(X, g(X))$. However, this derivation is not innersmost, and the only innersmost narrowing derivation is not sucessful:
+    $$f(X,g(X)) = a \narrow_{[X/b]} f(b,b) = a$$
+    Therefore, innersmost narrowing cannot compute the solution.
+\end{example}
+
+\begin{theorem}[\cite{HANUS1994583}]
+    If $E$ is a finite set of constructor-based unconditional equations such that the rewrite relation $\contr_E$ is convergent and all function are totally defined, then innersmost narrowing is complete w.r.t ground substitutions.
+\end{theorem}
+
+For a precise description of this strategy (under the conditions of the above theorem) we represent a equational literal in a goal by a skeleton and an environment part. The skeleton is an equation composed of terms occuring in the original program, and the environment is a substitution which as to be applied to the equation in order to obtain  the actual literal.
+
+\begin{definition}
+     The initial equation $E$ is represented by the pair $\pair{E}{[]}$. If $\pair{E}{\sigma}$ is a literal, then a derivation step in the innersmost narrowing calculus is one the following two forms. Let $p$ be an innemost position:
+     \begin{enumerate}
+         \item \textit{Narrowing:} Let $l = r$ be a variant of a rule such that $\restr{E}{p}\sigma$ and $l$ are unifiable with $mgu$ $\tau$. Then $\pair{E[r]_p}{\sigma \tau}$ is the next literal derived by an innersmost basic narrowing step.
+         \item \textit{Innersmost Reflection:} Let $\gamma$ be the substitution $[x / \restr{E}{p}\sigma]$, with the condition that $x$ is a fresh variable. Then $\pair{E[x]_p}{\sigma \gamma}$ is the next literal derived by an innemost reflection step.
+     \end{enumerate}
+\end{definition}
+

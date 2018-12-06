@@ -3,36 +3,35 @@
 Conditional narrowing is our next step on building tools for the main goal of our study, that is, the integration of functional and logic languages.
 
 \begin{definition}
-    If $c$ is a finite sequence of equations $s_1 = t_1, \dots, s_n = t_n$ then $\overline{c}$ denotes the multiset $\{ eq(s_1, t_1), \dots, eq(s_n, t_n) \}$ wich will be called \textit{goal clause}. If a \textit{goal clause} is the multiset consisting of a finite number of ``true''s then we denote it as $\top$.
+	If $c$ is a finite sequence of equations $s_1 = t_1, \dots, s_n = t_n$ then $\overline{c}$ denotes the multiset $\{ eq(s_1, t_1), \dots, eq(s_n, t_n) \}$ wich will be called \textit{goal clause}. If a \textit{goal clause} is the multiset consisting of a finite number of ``true''s then we denote it as $\top$.
 \end{definition}
 
 Conditional narrowing is definte over goal clauses instead of being defined over terms directly, as in the unconditional case. To simplify notation, call a generic goal clause $eq(s_1, t_1)$ just as an expression $e$.
 
 \begin{definition}
-    Let $\trs$ be a CTRS. A goal clause $S$ \textit{conditionally narrows} to a goal clause $T$ iff there exists a goal $e \in S$, a non-variable position $p \in \basicPos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a conditional rewrite rule in $\trs$, and a substitution $\sigma$ such that:
-    \begin{enumerate}
-        \item $\sigma$ is a most general unifier of $\restr{e}{p}$ and $l$,
-        \item $T = (S \setminus \{e\})\sigma \cup \{ e[r]_p \cup \overline{c} \}\sigma$
-    \end{enumerate}
-    We say that $S \narrow_{[e, p, \rho, \sigma]} T$ or simply $S \narrow_\sigma T$, when the other information is clear from the context.
+	Let $\trs$ be a CTRS. A goal clause $S$ \textit{conditionally narrows} to a goal clause $T$ iff there exists a goal $e \in S$, a non-variable position $p \in \basicPos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a conditional rewrite rule in $\trs$, and a substitution $\sigma$ such that:
+	\begin{enumerate}
+		\item $\sigma$ is a most general unifier of $\restr{e}{p}$ and $l$,
+		\item $T = (S \setminus \{e\})\sigma \cup \{ e[r]_p \cup \overline{c} \}\sigma$
+	\end{enumerate}
+	We say that $S \narrow_{[e, p, \rho, \sigma]} T$ or simply $S \narrow_\sigma T$, when the other information is clear from the context.
 \end{definition}
 
 \begin{example}
-    Consider the TRS
-    \begin{displaymath}
-        \trs =
-        \begin{cases}
-            even(0) & \contr T                               \\
-            even(s(x)) & \contr odd(x) \\
-            odd(x) & \contr T \Leftarrow even(x) = F \\
-            odd(x) & \contr F \Leftarrow even(x) = T
-        \end{cases}
-    \end{displaymath}
-    The picture below describe a solution for the goal $eq(even(s(y)), T)$.
+	Consider the TRS
+	\begin{displaymath}
+		\trs =
+		\begin{cases}
+			even(0)    & \contr T                        \\
+			even(s(x)) & \contr odd(x)                   \\
+			odd(x)     & \contr T \Leftarrow even(x) = F \\
+			odd(x)     & \contr F \Leftarrow even(x) = T
+		\end{cases}
+	\end{displaymath}
 \end{example}
 
 \begin{definition}
-    Let $\trs$ be a CTRS and $S$ a goal clause. We write $\trs \vdash S$ iff $S \stc_R \top$. The set of all such goals is denoted by $\mathcal{G}_\top(\trs)$ or simply $\mathcal{G}_\top$.
+	Let $\trs$ be a CTRS and $S$ a goal clause. We write $\trs \vdash S$ iff $S \stc_R \top$. The set of all such goals is denoted by $\mathcal{G}_\top(\trs)$ or simply $\mathcal{G}_\top$.
 \end{definition}
 
 If $\trs$ is confluent then $\mathcal{G}_\top$ is closed under $\contr_\trs$. The level of a goal clause $T \in \mathcal{G}_\top$ is the least $n$ such that $\trs_n \vdash T$.
@@ -40,93 +39,93 @@ If $\trs$ is confluent then $\mathcal{G}_\top$ is closed under $\contr_\trs$. Th
 Now we prove soundness of conditional narrowing.
 
 \begin{theorem}
-    Let $\trs$ be a CTRS and $S$ a goal clause. If $S \narrow_\sigma^* T$ then $\trs \vdash S \sigma$.
-    \begin{proof}
-        The proof goes by induction on the length of the narrowing derivation from $S$ to $T$. The case of zero length is trivial. Suppose
-        $$S \narrow_{[e, \rho, \sigma_1]} S_1 \narrow_{\sigma_2}^* T$$
-        where $\rho : l \contr r \Leftarrow c$ is a variant of a rewrite rule from $\trs$. Let $\sigma = \sigma_1 \sigma_2$. By definition,
-        $$S_1 = (S \setminus {e})\sigma_1 \cup \{ e[r]_p \cup \overline{c} \}\sigma_1.$$
-        The induction hypothesis yields $\trs \vdash S_1 \sigma_2$. Hence, we have both $\trs \vdash (S \setminus {e}) \sigma \cup \{e[r]_p \cup \overline{c} \}\sigma$ and $\trs \vdash \overline{c} \sigma$. From the last observation we have that $\overline{c}\sigma \stc_\trs \top$, so all constraints of the rule $\rho : l \contr r \Leftarrow c$ is solved. So $l\sigma \contr_\trs r \sigma$ and therefore:
-        $$S \sigma \contr_\trs (T \sigma \setminus \{ e\sigma \}) \cup \{ (e\sigma)[r\sigma]_p \}.$$
-        Observe that $(S \sigma \setminus \{ e\sigma \}) \cup \{ (e\sigma)[r\sigma]_p \} = (S \setminus \{e\})\sigma \cup \{ e[r]_p \}\sigma$. Hence,
-        $$S \sigma \contr_\trs S_1\sigma \stc_\trs \top$$
-        Finally, $\trs \vdash S \sigma$, as requested.
-    \end{proof}
+	Let $\trs$ be a CTRS and $S$ a goal clause. If $S \narrow_\sigma^* T$ then $\trs \vdash S \sigma$.
+	\begin{proof}
+		The proof goes by induction on the length of the narrowing derivation from $S$ to $T$. The case of zero length is trivial. Suppose
+		$$S \narrow_{[e, \rho, \sigma_1]} S_1 \narrow_{\sigma_2}^* T$$
+		where $\rho : l \contr r \Leftarrow c$ is a variant of a rewrite rule from $\trs$. Let $\sigma = \sigma_1 \sigma_2$. By definition,
+		$$S_1 = (S \setminus {e})\sigma_1 \cup \{ e[r]_p \cup \overline{c} \}\sigma_1.$$
+		The induction hypothesis yields $\trs \vdash S_1 \sigma_2$. Hence, we have both $\trs \vdash (S \setminus {e}) \sigma \cup \{e[r]_p \cup \overline{c} \}\sigma$ and $\trs \vdash \overline{c} \sigma$. From the last observation we have that $\overline{c}\sigma \stc_\trs \top$, so all constraints of the rule $\rho : l \contr r \Leftarrow c$ is solved. So $l\sigma \contr_\trs r \sigma$ and therefore:
+		$$S \sigma \contr_\trs (T \sigma \setminus \{ e\sigma \}) \cup \{ (e\sigma)[r\sigma]_p \}.$$
+		Observe that $(S \sigma \setminus \{ e\sigma \}) \cup \{ (e\sigma)[r\sigma]_p \} = (S \setminus \{e\})\sigma \cup \{ e[r]_p \}\sigma$. Hence,
+		$$S \sigma \contr_\trs S_1\sigma \stc_\trs \top$$
+		Finally, $\trs \vdash S \sigma$, as requested.
+	\end{proof}
 \end{theorem}
 
 Now the main goal is prove a completeness result for conditional narrowing. The ideia is still the same: compare narrowing steps with a kind of rewrite relation and lift rewrite steps to narrowing steps. Remember that early we have defined narrowing on terms rather than equational goals. In order to compare conditional rewriting and conditional narrowing, Backmayr [2] introduced a kind of rewriting relation on goal clauses, he call it \textit{reduction without evaluating conditions}.
 
 \begin{definition}\label{definition:rewrite-on-goals}
-    Let $\trs$ be a CTRS and suppose that $S$ and $T$ are goal clasuses. We say $S \rewriteOnGoals_\trs T$ if there exists a goal $e \in S$, a postion $p \in \pos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a rewrite rule in $\trs$ and a substitution $\sigma$ such that
-    \begin{enumerate}
-        \item $\restr{e}{p} = l \sigma$
-        \item $T = (S \setminus \{e\}) \cup \{ e[r\sigma]_p \} \cup \overline{c} \sigma$.
-        \item $\trs \vdash \overline{c} \sigma$.
-    \end{enumerate}
+	Let $\trs$ be a CTRS and suppose that $S$ and $T$ are goal clasuses. We say $S \rewriteOnGoals_\trs T$ if there exists a goal $e \in S$, a postion $p \in \pos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a rewrite rule in $\trs$ and a substitution $\sigma$ such that
+	\begin{enumerate}
+		\item $\restr{e}{p} = l \sigma$
+		\item $T = (S \setminus \{e\}) \cup \{ e[r\sigma]_p \} \cup \overline{c} \sigma$.
+		\item $\trs \vdash \overline{c} \sigma$.
+	\end{enumerate}
 \end{definition}
 
 Note that this relation extend the action of the CTRS $\trs$ from terms to multisets of goal clauses. In this view, we also define the approximation $\rewriteOnGoals_\trs^n \; (n \geq 0)$ as in Definition \ref{definition:ctrs-approximation-rewrite-relation}, that is, $S \rewriteOnGoals_\trs^0$ if $T = (S \setminus \{e\}) \cup \{true\}$ with $e = eq(s,s) \in S$ and $S \rewriteOnGoals_\trs^n$ if $S \rewriteOnGoals_{[e, \rho, \sigma]} T$ with $\trs_n \vdash \overline{c} \sigma$. Again, $\rewriteOnGoals_\trs^n \subseteq \rewriteOnGoals_\trs^{n+1}$ for all $n \geq 0$ and
 $$\rewriteOnGoals_\trs := \bigcup\limits_{n \geq 0} \rewriteOnGoals_\trs^n.$$
 As usual, $\rewriteOnGoals^*$ denote the reflexive-transitive closure of $\rewriteOnGoals$.
 \begin{remark}
-    For 1-CTRS the relation $\rewriteOnGoals$ can be viewed as an special case of the conditional narrowing relation $\narrow$ but in general this is not true due to the possible extra variables in general conditional rewrite rules.
+	For 1-CTRS the relation $\rewriteOnGoals$ can be viewed as an special case of the conditional narrowing relation $\narrow$ but in general this is not true due to the possible extra variables in general conditional rewrite rules.
 \end{remark}
 
 \begin{lemma}\label{lemma:completeness-rewrite-on-goals}
-    Let $\trs$ be a CTRS and $S$ a goal clause. We have $\trs \vdash S$ if and only if $S \rewriteOnGoals^* \top$.
+	Let $\trs$ be a CTRS and $S$ a goal clause. We have $\trs \vdash S$ if and only if $S \rewriteOnGoals^* \top$.
 
-    \begin{proof}
-        Suppose first that $\trs \vdash T$. We reason by induction on $n$ to show that there exists a sequence $S \rewriteOnGoals^* \top$ whenever $\trs_n \vdash S$. If $n = 0$ then there exists a rewrite sequence from $S$ to $\top$ in which only the rule $eq(x,x) \contr true$ is used. By definition, this sequence is also a $\rewriteOnGoals$-sequence.
+	\begin{proof}
+		Suppose first that $\trs \vdash T$. We reason by induction on $n$ to show that there exists a sequence $S \rewriteOnGoals^* \top$ whenever $\trs_n \vdash S$. If $n = 0$ then there exists a rewrite sequence from $S$ to $\top$ in which only the rule $eq(x,x) \contr true$ is used. By definition, this sequence is also a $\rewriteOnGoals$-sequence.
 
-        Suppose $\trs_{n+1} \vdash S$. So there exists an $\trs_{n+1}$-sequence from $S$ to $\top$. Now we use induction on the length of this sequence. The case of zero length is trivial. So let
-        $$S \contr_{\trs_{n+1}} S_1 \stc_{\trs_{n+1}} \top$$
-        By the second induction hypothesis we obtain a reduction sequence $S_1 \rewriteOnGoals^* \top$. By the first reduction, there exists a goal $e \in S$, a position $p \in \pos{e}$, a variant $ \rho : l \contr r \Leftarrow c$ of a rewrite rule in $\trs$, and a substitution $\sigma$ such that $\restr{e}{p} = l \sigma$, $S_1 = (S \setminus{e}) \cup \{e[r\sigma]_p\}$, and $\trs_n \vdash \overline{c}\sigma$.  From the first induction hypothesis\footnote{That is, $\trs_n \vdash S$ implies that there exists a sequence $S \rewriteOnGoals^* \top$.}
-        and by Definition \ref{definition:rewrite-on-goals} we have $\overline{c}\sigma \rewriteOnGoals^* \top$. Hence, $S \rewriteOnGoals S_1 \cup \overline{c}\sigma$. Combining this step with the previous one we get
-        $$S \rewriteOnGoals S_1 \rewriteOnGoals^* \top.$$
+		Suppose $\trs_{n+1} \vdash S$. So there exists an $\trs_{n+1}$-sequence from $S$ to $\top$. Now we use induction on the length of this sequence. The case of zero length is trivial. So let
+		$$S \contr_{\trs_{n+1}} S_1 \stc_{\trs_{n+1}} \top$$
+		By the second induction hypothesis we obtain a reduction sequence $S_1 \rewriteOnGoals^* \top$. By the first reduction, there exists a goal $e \in S$, a position $p \in \pos{e}$, a variant $ \rho : l \contr r \Leftarrow c$ of a rewrite rule in $\trs$, and a substitution $\sigma$ such that $\restr{e}{p} = l \sigma$, $S_1 = (S \setminus{e}) \cup \{e[r\sigma]_p\}$, and $\trs_n \vdash \overline{c}\sigma$.  From the first induction hypothesis\footnote{That is, $\trs_n \vdash S$ implies that there exists a sequence $S \rewriteOnGoals^* \top$.}
+		and by Definition \ref{definition:rewrite-on-goals} we have $\overline{c}\sigma \rewriteOnGoals^* \top$. Hence, $S \rewriteOnGoals S_1 \cup \overline{c}\sigma$. Combining this step with the previous one we get
+		$$S \rewriteOnGoals S_1 \rewriteOnGoals^* \top.$$
 
-        Conversely, suppose $S \rewriteOnGoals^* \top$. We use induction on the length of the sequence $S \rewriteOnGoals^* \top$. The case of zero length is trivial. Suppose $S \rewriteOnGoals S_1 \rewriteOnGoals^* \top$. The induction hypothesis yields $\trs \vdash S_1$. By the first step: there exists a goal $e \in S$, a position $p \in \pos{e}$, a variant $\rho: l \contr r \Leftarrow c$ of a rewrite rule in $\trs$, and a substitution $\sigma$ such that $\restr{e}{p} = l \sigma$, $S_1 = (S \setminus \{e\}) \cup \{e[r\sigma]_p\} \cup \overline{c}\sigma$, and $ \trs \vdash \overline{c}\sigma$. Note that $S \contr_\trs S_2 = (S \setminus \{e\}) \cup \{e[r\sigma]_p\}$. Since $S_2 \subseteq S_1$ we infer $\trs \vdash S_2$ from the fact that $\trs \vdash S_1$. Combining the results above we get
-        $$S \contr_\trs S_1 \contr_\trs^* \top.$$
-        Obtaining the result.
-    \end{proof}
+		Conversely, suppose $S \rewriteOnGoals^* \top$. We use induction on the length of the sequence $S \rewriteOnGoals^* \top$. The case of zero length is trivial. Suppose $S \rewriteOnGoals S_1 \rewriteOnGoals^* \top$. The induction hypothesis yields $\trs \vdash S_1$. By the first step: there exists a goal $e \in S$, a position $p \in \pos{e}$, a variant $\rho: l \contr r \Leftarrow c$ of a rewrite rule in $\trs$, and a substitution $\sigma$ such that $\restr{e}{p} = l \sigma$, $S_1 = (S \setminus \{e\}) \cup \{e[r\sigma]_p\} \cup \overline{c}\sigma$, and $ \trs \vdash \overline{c}\sigma$. Note that $S \contr_\trs S_2 = (S \setminus \{e\}) \cup \{e[r\sigma]_p\}$. Since $S_2 \subseteq S_1$ we infer $\trs \vdash S_2$ from the fact that $\trs \vdash S_1$. Combining the results above we get
+		$$S \contr_\trs S_1 \contr_\trs^* \top.$$
+		Obtaining the result.
+	\end{proof}
 \end{lemma}
 
 We write $S \cong T$ if the goal clauses $S$ and $T$ are identical or they differ only in the number of $true$'s, i.e., $S - \top = T - \top$ by som abuse of notation.
 
 \begin{proposition}(\cite{Middeldorp1994}, Proposition 6.9)
-    Let $\trs$ be a CTRS and $S$ a goal clause.
-    \begin{enumerate}
-        \item If $S \rewriteOnGoals^*_\trs T$ then $T$ can be partitioned into $T_1$ and $T_2$ such that $S \rewriteOnGoals^*_\trs T_1$ and $\trs \vdash T_2$.
-        \item If $S \rewriteOnGoals^*_\trs T$ then there exists a goal clause $T_1$ such that $S \rewriteOnGoals^*_\trs T \cup T_1$ and $\trs \vdash T_1$.
-    \end{enumerate}
+	Let $\trs$ be a CTRS and $S$ a goal clause.
+	\begin{enumerate}
+		\item If $S \rewriteOnGoals^*_\trs T$ then $T$ can be partitioned into $T_1$ and $T_2$ such that $S \rewriteOnGoals^*_\trs T_1$ and $\trs \vdash T_2$.
+		\item If $S \rewriteOnGoals^*_\trs T$ then there exists a goal clause $T_1$ such that $S \rewriteOnGoals^*_\trs T \cup T_1$ and $\trs \vdash T_1$.
+	\end{enumerate}
 \end{proposition}
 
 \begin{lemma}
-    Let $\trs$ be a confluent CTRS. If $S \rewriteOnGoals^*_\trs T_1$ and $S \rewriteOnGoals^*_\trs T_2$ then there exists goal clauses $T_3 \cong T_4$ such that $T_1 \rewriteOnGoals^*_\trs T_3$ and $T_2 \rewriteOnGoals^*_\trs T_4$.
+	Let $\trs$ be a confluent CTRS. If $S \rewriteOnGoals^*_\trs T_1$ and $S \rewriteOnGoals^*_\trs T_2$ then there exists goal clauses $T_3 \cong T_4$ such that $T_1 \rewriteOnGoals^*_\trs T_3$ and $T_2 \rewriteOnGoals^*_\trs T_4$.
 \end{lemma}
 
 Now, following our standard strategy, we give the statement of a \textit{lifting lemma} for conditional narrowing.
 
 \begin{lemma}\label{lemma:lifting-lemma-conditional-narrowing}
-    Let $\trs$ be a 1-CTRS. Suppose we have goals clauses $S$ and $T$, a normalized substitution $\theta$, and a set $V$ of variables such that $\vars{S} \cup \dom{\theta} \subseteq V$ and $T = S \theta$. If $T \rewriteOnGoals^*_\trs T'$ then there exists a goal clause $S'$ and substitution $\theta', \sigma$ such that
-    \begin{enumerate}
-        \item $S \narrow^*_\trs S'$
-        \item $S'\theta' = T'$
-        \item $\theta =^V = \sigma\theta'$
-        \item $\theta'$ is normalized
-    \end{enumerate}
-    Futhermore, we may assume that the narrowing derivation $S \narrow^*_\sigma S'$ and the rewrite sequence $T \rewriteOnGoals^*_\trs T'$ employ the same rewrite rules at the same positions in the corresponding goals.
-    \begin{proof}
-        Almost identical to the proof of the lifting lemma for TRSs, Lemma \ref{lemma:lifting-lemma-ordinary-narrowing}. The only difference is that we are dealing with goals clauses instead of terms.
-    \end{proof}
+	Let $\trs$ be a 1-CTRS. Suppose we have goals clauses $S$ and $T$, a normalized substitution $\theta$, and a set $V$ of variables such that $\vars{S} \cup \dom{\theta} \subseteq V$ and $T = S \theta$. If $T \rewriteOnGoals^*_\trs T'$ then there exists a goal clause $S'$ and substitution $\theta', \sigma$ such that
+	\begin{enumerate}
+		\item $S \narrow^*_\trs S'$
+		\item $S'\theta' = T'$
+		\item $\theta =^V = \sigma\theta'$
+		\item $\theta'$ is normalized
+	\end{enumerate}
+	Futhermore, we may assume that the narrowing derivation $S \narrow^*_\sigma S'$ and the rewrite sequence $T \rewriteOnGoals^*_\trs T'$ employ the same rewrite rules at the same positions in the corresponding goals.
+	\begin{proof}
+		Almost identical to the proof of the lifting lemma for TRSs, Lemma \ref{lemma:lifting-lemma-ordinary-narrowing}. The only difference is that we are dealing with goals clauses instead of terms.
+	\end{proof}
 \end{lemma}
 
 \begin{definition}\label{definition:CTRS-sub-solution}
-    A substitution $\sigma$ is called an $\trs$-solution of a goal clause $T$ if $\trs \vdash T\sigma$.
+	A substitution $\sigma$ is called an $\trs$-solution of a goal clause $T$ if $\trs \vdash T\sigma$.
 \end{definition}
 
 \begin{theorem}
-    Conditional narrowing is complete for complete 1-CTRSs.
-    \begin{proof}
-        Let $\trs$ be a complete 1-CTRSs and suppose $\sigma$ is an $\trs$-solution of a goal clause $T$. Let $\trsNF{\sigma}$ be the normal form of $\sigma$. We obtain $\trs \vdash T \trsNF{\sigma}$ from the confluence of $\trs$. According to Lemma \ref{lemma:completeness-rewrite-on-goals} there exists a sequence $T \trsNF{\sigma} \rewriteOnGoals^*_\trs \top$. Lemma \ref{lemma:lifting-lemma-conditional-narrowing} yields a narrowing derivation $T \narrow^*_\tau \top$ and a substitution $\sigma'$ such that $\tau \sigma' =^{\vars{T}} \trsNF{\sigma}$. Therefore $\tau \iqoless[\trs][\vars{T}] \trsNF{\sigma}$.
-    \end{proof}
+	Conditional narrowing is complete for complete 1-CTRSs.
+	\begin{proof}
+		Let $\trs$ be a complete 1-CTRSs and suppose $\sigma$ is an $\trs$-solution of a goal clause $T$. Let $\trsNF{\sigma}$ be the normal form of $\sigma$. We obtain $\trs \vdash T \trsNF{\sigma}$ from the confluence of $\trs$. According to Lemma \ref{lemma:completeness-rewrite-on-goals} there exists a sequence $T \trsNF{\sigma} \rewriteOnGoals^*_\trs \top$. Lemma \ref{lemma:lifting-lemma-conditional-narrowing} yields a narrowing derivation $T \narrow^*_\tau \top$ and a substitution $\sigma'$ such that $\tau \sigma' =^{\vars{T}} \trsNF{\sigma}$. Therefore $\tau \iqoless[\trs][\vars{T}] \trsNF{\sigma}$.
+	\end{proof}
 \end{theorem}

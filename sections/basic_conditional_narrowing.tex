@@ -1,0 +1,102 @@
+% !TeX root = ../main.tex
+\section{Basic Conditional Narrowing}
+From the same motivations as in the unconditional narrowing case we pursuit the objective of define basic conditional narrowing derivations.
+
+\begin{definition}
+    Let $T$ be a goal clause. A \textit{position constraint} for $T$ is a mapping $B$ that assigns to every goal $e \in T$ a subset of $\basicPos{e}$. The position constraint that assigns to every $e \in T$ the set $\basicPos{e}$ will be denoted by $\overline{T}$.
+\end{definition}
+
+\begin{definition}
+    \begin{enumerate}
+        \item A narrowing derivation
+        $$T \narrow_{[e_1, p_1, l_1 \contr r_1 \Leftarrow c_1, \sigma_1]} \narrow \cdots \narrow_{[e_{n-1}, p_{n_1}, l_{n-1} \contr r_{n-1} \Leftarrow c_{n-1}, \sigma_{n-1}]} T_n$$
+        is basic if $p_i \in B_i(e_i)$ for $1 \leq i \leq n - 1$ where the position constraints $B_1, \dots, B_n$ are inductively defined by $B_1 = \overline{T}_1$ and
+        \begin{displaymath}
+            B_{i+1}(e) =
+            \begin{cases}
+                B_i(e') & \text{ if } e' \in T_i \setminus \{e_i\} \\
+                \mathcal{B}(B_i(e_i), p_i, r_i) & \text{ if } e' = e_i[r_i]_{p_i} \\
+                \basicPos{e'} & \text{ if } e' \in \overline{c}_i
+            \end{cases}
+        \end{displaymath}
+        \item A rewrite sequence
+        $$T \rewriteOnGoals_{[e_1, p_1, l_1 \contr r_1 \Leftarrow c_1, \sigma_1]} \rewriteOnGoals \cdots \rewriteOnGoals_{[e_{n-1}, p_{n_1}, l_{n-1} \contr r_{n-1} \Leftarrow c_{n-1}, \sigma_{n-1}]} T_n$$
+        is \textit{based} on a postion constraint $B_1$ for $T_1$ if $p_i \in B_i$ for $1 \leq i \leq n - 1$ with $B_2, \dots, B_n$ defined by
+        \begin{displaymath}
+            B_{i+1}(e) =
+            \begin{cases}
+                B_i(e) & \text{ if } e' \in T_i \setminus \{e_i\} \\
+                \mathcal{B}(B_i(e_i), p_i, r_i) & \text{ if } e = e_i[r_i\sigma_i]_{p_i} \\
+                \basicPos{e'} & \text{ if } e=e'\sigma \text{ with } e' \in \overline{c}_i
+            \end{cases}
+        \end{displaymath}
+        for all $1 \leq i < n$ and $e \in T_{i+1}$.
+    \end{enumerate}
+\end{definition}
+
+Holldobler [cite] showed that basic conditional narrowing is complete for complete 1-CTRSs. However, the following example shows that this result is indeed not valid.
+
+\begin{example}
+    Consider the 1-CTRS
+    \begin{displaymath}
+        \trs =
+        \begin{cases}
+            f(x) & \contr a                               \\
+            d & \contr b \\
+            d & \contr c\\
+            b & \contr c \Leftarrow f(d) = a
+        \end{cases}
+    \end{displaymath}
+\end{example}
+
+The authors in \cite{Middeldorp1994} have shown that $\trs$ is complete. Note that basic conditional narrowing is not able to solve the goal $eq(f(d),a)$ as can be seen form the figure below.
+
+\begin{figure}[!ht]
+    \begin{displaymath}
+        \xymatrix{
+            & & eq(f(d),a) \ar@{~>}[dll] \ar@{~>}[drr] \ar@{~>}[d] &  & \\
+            eq(\underline{d},b),eq(\underline{d},c) \ar@{~>}[d] & & eq(f(b),a) \ar@{~>}[dl] \ar@{~>}[dr] & & eq(f(c),a) \ar@{~>}[d] \\
+            eq(\underline{d},c), eq(f(d),a) &  eq(\underline{b},c) &  & eq(f(c),a), eq(f(d),a) & eq(\underline{c},b) \ar@{~>}[d]\\
+            & & & & eq(f(d),a)
+        }
+    \end{displaymath}
+    \caption{Derivation tree for the objective $eq(f(d),a)$}
+    \label{figure:counterexample-basic-conditional-narrowing}
+\end{figure}
+Note that this derivation tree is basic-normalized, i.e., we explore all basic reductions. However, the following non-basic narrowing derivation shows that the goal can be solved:
+\begin{align*}
+    eq(f(d),a) &\narrow eq(a,a), eq(\underline{d},b), eq(\underline{d},c) \\
+    & \narrow eq(a,a), eq(b,b), eq(\underline{d},c) \\
+    & \narrow eq(a,a), eq(b,b), eq(c,c) \\
+    & \narrow^* \top
+\end{align*}
+Note further that basic conditional narrowing is unable to solve the normalied goal $eq(f(x),a)$. In \cite{Middeldorp1994}, Holldobler himself has finded the problem in his previous proof. The mistake was due to the incorrect assumption that the strong normalization of $\rewriteOnGoals_\trs$ is implied by the strong normalization of $\trs$. We now show, following his own steps, that completeness of basic conditional narrowing can be ensured by strengthening strong normalization. We begin with a definition.
+
+\begin{definition}
+    A 1-CTRS $\trs$ is decreasing if there exists a well-founded extension $>$ of the rewrite relation $\contr_\trs$ with the following properties:
+    \begin{enumerate}
+        \item $>$ has the subterm property, i.e. $t > \restr{t}{p}$ for all positions $p \in \pos{t} \setminus \{\Lambda\}$
+        \item if $l \contr r \Leftarrow c \in \trs$ and $\sigma$ is a substitution then $l\sigma > s \sigma$ for all $s = t \in c$.
+    \end{enumerate}
+\end{definition}
+
+Every decreasing 1-CTRS is strongly normlizing and moreover -- when the number of rewrite rules is finite -- its rewrite relation is decidable.
+
+\begin{example}
+    The CTRS of the above example is not decreasing: as $f(d) \contr a \Leftarrow d = b, d = c$ is an instance of the first rewrite rule we must have $f(d) > b$, but the rule $b \contr c \Leftarrow f(d) = a$ requires $b > f(d)$.
+\end{example}
+
+With the decreasing hypothesys one can show:
+\begin{lemma}
+    If $\trs$ is a decreasing 1-CTRS then $\rewriteOnGoals_\trs$ is strongly normalizing.
+\end{lemma}
+
+Is now standard to give statements as in the basic non-conditional case. That is the content of the next lemma.
+\begin{lemma}
+    Let $\trs$ be a 1-CTRS, $T$ a goal clause, and $\sigma$ a normalized substitution. Every innermost $\rewriteOnGoals_\trs$-sequence starting from $T \sigma$ is based on $\overline{T}$.
+\end{lemma}
+
+Finally, we have our desired completeness result for conditional basic narrowing.
+\begin{theorem}
+    Basic conditional narrowing is complete for decreasing and confluent 1-CTRS.
+\end{theorem}
