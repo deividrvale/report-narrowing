@@ -53,7 +53,7 @@ Now we prove soundness of conditional narrowing.
 	\end{proof}
 \end{theorem}
 
-Now the main goal is prove a completeness result for conditional narrowing. The ideia is still the same: compare narrowing steps with a kind of rewrite relation and lift rewrite steps to narrowing steps. Remember that early we have defined narrowing on terms rather than equational goals. In order to compare conditional rewriting and conditional narrowing, Backmayr [2] introduced a kind of rewriting relation on goal clauses, he call it \textit{reduction without evaluating conditions}.
+Now the main goal is prove a completeness result for conditional narrowing. The ideia is still the same: compare narrowing steps with a kind of rewrite relation and lift rewrite steps to narrowing steps. Remember that early we have defined narrowing on terms rather than equational goals. In order to compare conditional rewriting and conditional narrowing, we need to introduce a kind of rewriting relation on goal clauses, we call it \textit{reduction without evaluating conditions}.
 
 \begin{definition}\label{definition:rewrite-on-goals}
 	Let $\trs$ be a CTRS and suppose that $S$ and $T$ are goal clasuses. We say $S \rewriteOnGoals_\trs T$ if there exists a goal $e \in S$, a postion $p \in \pos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a rewrite rule in $\trs$ and a substitution $\sigma$ such that
