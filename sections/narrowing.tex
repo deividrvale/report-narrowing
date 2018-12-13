@@ -29,7 +29,7 @@ We start the presentation by the so-called syntactic unification, i.e. $E$-unifi
 		$$\{ \ueq{t}{x} \} \cup G \implies \{ \ueq{x}{t} \} \cup G \; \text{if} \; t \notin V$$
 
 		\textbf{(5) Occurs Check}
-		$$\{ \ueq{x}{t} \} \cup G \implies \bot \text{ se } x \in \vars{t} \text{ and } x \neq t$$
+		$$\{ \ueq{x}{t} \} \cup G \implies \bot \text{ if } x \in \vars{t} \text{ and } x \neq t$$
 
 		\textbf{(6) Variable Elimination}
 		$$\{ \ueq{x}{t} \} \cup G \implies G\{x \mapsto t\} \text{ if } x \notin \vars{t}$$
@@ -131,7 +131,7 @@ In order to solve an equation $\ueq{s}{t}$ in an equational theory, correspondin
 
 If $(\signature, E)$ is an equational theory, write $[s = t]_E$ for the set of all solutions to the equation $s = t$ modulo $E$, i.e $\{\gamma \mid E \vdash s\gamma = t \gamma \}$. Moreover, if $X$ is some set of substitutions, let $\sigma X$ be the set $\{ \sigma \mid \gamma \in X \}$.
 
-By definition, solutions of the equation $s \eqUnif{E}{?}t$ are indeed closed under any ``variable assignment'', that is, they are closed under applications of substitutions. As explained in \cite{10.1007/BFb0032044} -- Section 2.4; for every substitution $\sigma$ we have $[s = t]_E \supseteq \{ \sigma \tau \mid E \vdash s\sigma \tau = t \sigma \tau  \} = \sigma [s\sigma = t \sigma]_E$, there is in principle the possibility of a stepwise determination of $[s = t]_E$ by means of ``specializations'' of the solution set. It consists of two kind of steps. The first one is as just described guess a component $\sigma$ of the solution set and narrows $[s = t ]_E$ to $\sigma[s = t]_E$. The other one is: apply one equation of $E$ in one of the sides of the equation $s = t$ in hand. It is clear that this two types of steps do not change the solution set of the equation $s \eqUnif{E}{?} t$. In this way, by interating steps of the first and second type, we can finally get an equation that is syntactically unifiable, as described above.
+By definition, solutions of the equation $s \eqUnif{E}{?}t$ are indeed closed under any ``variable assignment'', that is, they are closed under applications of substitutions. As explained in \cite{10.1007/BFb0032044} -- Section 2.4; for every substitution $\sigma$ we have $[s = t]_E \supseteq \{ \sigma \tau \mid E \vdash s\sigma \tau = t \sigma \tau  \} = \sigma [s\sigma = t \sigma]_E$, there is in principle the possibility of a step wise determination of $[s = t]_E$ by means of ``specialisations'' of the solution set. It consists of two kind of steps. The first one is as just described guess a component $\sigma$ of the solution set and narrows $[s = t ]_E$ to $\sigma[s = t]_E$. The other one is: apply one equation of $E$ in one of the sides of the equation $s = t$ in hand. It is clear that this two types of steps do not change the solution set of the equation $s \eqUnif{E}{?} t$. In this way, by iterating steps of the first and second type, we can finally get an equation that is syntactically unifiable, as described above.
 
 The narrowing relation was defined on terms rather equational goals. They act upon goals by the means of the above transformation rules.
 
@@ -146,30 +146,30 @@ We now turn our attention on completeness of narrowing. The propositions below w
 \end{proposition}
 
 \begin{proposition}\label{proposition:change-of-domain-normalized}
-	Let $\trs$ be a TRS and suppose we have sets $A,B$ of variables and substitutions $\gamma, \theta, \theta'$ such that the following consditions are satisfied:
+	Let $\trs$ be a TRS and suppose we have sets $A,B$ of variables and substitutions $\gamma, \theta, \theta'$ such that the following conditions are satisfied:
 	\begin{enumerate}
-		\item $\restr{\theta}{A}$ is $\trs$-normalized,
+		\item $\restr{\theta}{A}$ is $\trs$-normalised,
 		\item $\theta =^A \gamma \theta'$,
 		\item $B \subseteq (A \setminus \dom{\gamma}) \cup \vran{\restr{\gamma}{A}}$
 	\end{enumerate}
-	Then $\restr{\theta'}{B}$ is also normalized.
+	Then $\restr{\theta'}{B}$ is also normalised.
 	\begin{proof}
 		Let $x \in B$. We have to show that $x\theta'$ is an $\trs$-normal form. If $x \in A \setminus \dom{\gamma}$ then $x\theta' = x(\gamma\theta') = x\theta$ which is an $\trs$-normal form by the first condition. If $x \in \vran{\restr{\gamma}{A}}$ then there exists a variable $y \in A$ such that $x \in \vars{y\gamma}$. Also, by condition (2), we have $x\theta' \leq (y\gamma)\theta' = y\theta$. By condition (1) $y\theta$ is an $\trs$-normal form and hence its subterm $x\theta'$ is also an $\trs$-normal form.
 	\end{proof}
 \end{proposition}
 
 \begin{lemma}[Lifting Lemma]\label{lemma:lifting-lemma-ordinary-narrowing}
-	Let $\trs$ be a TRS. Suppose we have terms $s$ and $t$, a normalized substitution $\theta$ and a finite set of variables $V$ such that $\vars{s} \cup \dom{\theta} \subseteq V$ and $t = s\theta$. If $t \stc t'$ then there exist a term $s'$ and substitutions $\theta', \gamma$ such that:
+	Let $\trs$ be a TRS. Suppose we have terms $s$ and $t$, a normalised substitution $\theta$ and a finite set of variables $V$ such that $\vars{s} \cup \dom{\theta} \subseteq V$ and $t = s\theta$. If $t \stc t'$ then there exist a term $s'$ and substitutions $\theta', \gamma$ such that:
 	\begin{enumerate}
 		\item $s \narrow^{*}_{\gamma} s'$,
 		\item $t' = s'\theta'$,
 		\item $\theta =^V \gamma\theta'$,
-		\item $\theta'$ is $\trs$-normalized.
+		\item $\theta'$ is $\trs$-normalised.
 	\end{enumerate}
-	Futhermore, we may assume that the narrowing derivation $s \narrow^{*}_{\sigma} s'$ and the rewrite sequence $t \stc t'$ employ the same rules at the same positions.
+	Furthermore, we may assume that the narrowing derivation $s \narrow^{*}_{\sigma} s'$ and the rewrite sequence $t \stc t'$ employ the same rules at the same positions.
 
 	\begin{proof}
-		The proof is by induction on the length of the reduction sequence from $t$ to $t'$. If $t = t'$, a reduction of length zero, then the result crearly follows. Suppose $t \contr t_1 \stc t'$ is a reduction sequence of length $n+1$.
+		The proof is by induction on the length of the reduction sequence from $t$ to $t'$. If $t = t'$, a reduction of length zero, then the result clearly follows. Suppose $t \contr t_1 \stc t'$ is a reduction sequence of length $n+1$.
 
 		\begin{figure}[h!]
 			\begin{displaymath}
@@ -182,7 +182,7 @@ We now turn our attention on completeness of narrowing. The propositions below w
 			\label{figure:lifting-lemma}
         \end{figure}
 
-		Let $t$ contract to $t_1$ using a position $p \in \pos{t}$ and a variant $l \rightarrow r$ of a rule from $\trs$ such that $\vars{l} \cap V = \emptyset$. We use the fact that $t = s\theta$ to write $\restr{(s\theta)}{p} = l \tau$ for some substitution $\tau$ with $\dom{\tau} \subseteq \vars{l}$. Since $\theta$ is normalized we have $p$ is a non-variable position and hence $\restr{(s\theta)}{p} = (\restr{s}{p})\theta$. Let $\gamma = \tau \cup \theta$ so $(\restr{s}{p})\gamma = (\restr{s}{p})\theta = l \tau$ then $\restr{s}{p}$ and $l$ are unifiable. Consider $\gamma_1$ as an idempotent mgu of $\restr{s}{p}$ and $l$. By Lemma \ref{lemma:unifiers-preserve-variables} $\dom{\gamma_1} \cup \vran{\gamma_1} = \vars{\restr{s}{p}} \cup \vars{l}$. Let $s_1 = (s[r]_p)\gamma_1$. By definition \ref{definition:narrow},
+		Let $t$ contract to $t_1$ using a position $p \in \pos{t}$ and a variant $l \rightarrow r$ of a rule from $\trs$ such that $\vars{l} \cap V = \emptyset$. We use the fact that $t = s\theta$ to write $\restr{(s\theta)}{p} = l \tau$ for some substitution $\tau$ with $\dom{\tau} \subseteq \vars{l}$. Since $\theta$ is normalised we have $p$ is a non-variable position and hence $\restr{(s\theta)}{p} = (\restr{s}{p})\theta$. Let $\gamma = \tau \cup \theta$ so $(\restr{s}{p})\gamma = (\restr{s}{p})\theta = l \tau$ then $\restr{s}{p}$ and $l$ are unifiable. Consider $\gamma_1$ as an idempotent mgu of $\restr{s}{p}$ and $l$. By Lemma \ref{lemma:unifiers-preserve-variables} $\dom{\gamma_1} \cup \vran{\gamma_1} = \vars{\restr{s}{p}} \cup \vars{l}$. Let $s_1 = (s[r]_p)\gamma_1$. By definition \ref{definition:narrow},
 		\begin{equation}\label{lifting-lemma:eqn:s-narrows-s_1}
 			s \narrow_{\gamma_1} s_1
 		\end{equation}
@@ -213,14 +213,14 @@ We now turn our attention on completeness of narrowing. The propositions below w
 			                  & =^V \label{lifting-lemma:gamma1-instance-theta} \theta
 		\end{align}
 
-		Finally we show that $\theta_1$ is normalized. Since $\dom{\theta_1} \subseteq V_1$ if suffices to show that $\restr{\theta_1}{V_1}$ is normalized. Let $B = (V \setminus \dom{\gamma_1}) \cup \vars{\restr{\gamma_1}{V}}$. Proposition \ref{proposition:change-of-domain-normalized} (with $A = V$) yields the normalization of $\restr{\theta_1}{B}$. Remember that $\vran{\gamma_1} \subseteq \vars{\restr{s}{p}} \cup \vars{l}$. Let $x \in \vran{\gamma_1}$. Idempotence of $\gamma_1$ yields $x \notin \dom{\gamma_1}$. If $x \in \vars{\restr{s}{p}} \subseteq V$ then $x \in V \setminus \dom{\gamma_1}$. If $x \in \vars{l}$ then $x \in \vars{l\gamma_1} = \vars{(\restr{s}{p})\gamma_1}$ and thus $x \in \vran{\restr{\gamma_1}{V}}$. So $\vran{\gamma_1} \subseteq B$, and hence $B = V_1$. So $\theta_1$ is normalized.
+		Finally we show that $\theta_1$ is normalised. Since $\dom{\theta_1} \subseteq V_1$ if suffices to show that $\restr{\theta_1}{V_1}$ is normalised. Let $B = (V \setminus \dom{\gamma_1}) \cup \vars{\restr{\gamma_1}{V}}$. Proposition \ref{proposition:change-of-domain-normalized} (with $A = V$) yields the normalisation of $\restr{\theta_1}{B}$. Remember that $\vran{\gamma_1} \subseteq \vars{\restr{s}{p}} \cup \vars{l}$. Let $x \in \vran{\gamma_1}$. Idempotence of $\gamma_1$ yields $x \notin \dom{\gamma_1}$. If $x \in \vars{\restr{s}{p}} \subseteq V$ then $x \in V \setminus \dom{\gamma_1}$. If $x \in \vars{l}$ then $x \in \vars{l\gamma_1} = \vars{(\restr{s}{p})\gamma_1}$ and thus $x \in \vran{\restr{\gamma_1}{V}}$. So $\vran{\gamma_1} \subseteq B$, and hence $B = V_1$. So $\theta_1$ is normalised.
 
 		The induction hypothesis give us a term $s'$ and substitutions $\theta'$, $\gamma'$ such that
 		\begin{align}
 			 & s_1 \narrow_{\gamma'}^{*} s' \label{lifting-lemma:narrow:s_1-narrows-to-s-prime}       \\
 			 & t' = s'\theta'                                                                         \\
 			 & \theta_1 =^{V_1} \gamma'\theta' \label{lifting-lemma:eqn:theta_1-instance-theta-prime} \\
-			 & \theta' \text{ is normalized} \label{lifting-lemma:eqn:theta-prime-is-normalized}
+			 & \theta' \text{ is normalised} \label{lifting-lemma:eqn:theta-prime-is-normalized}
 		\end{align}
 		Moreover, we can assume that $s_1 \narrow_{\gamma'}^{*} s'$ and $t_1 \stc t'$ using the same rules at the same positions. Let $\gamma = \gamma_1 \gamma'$. By joining (\ref{lifting-lemma:eqn:s-narrows-s_1}) and (\ref{lifting-lemma:narrow:s_1-narrows-to-s-prime}) we get $s \narrow_{\gamma}^{*} s'$. By construction this narrowing derivation employs the same positions as the rewrite sequence $t \stc t'$. It remains to show that $\gamma \theta' =^V \theta$. Proposition \ref{proposition:change-of-domain} applied to (\ref{lifting-lemma:eqn:theta_1-instance-theta-prime}) give $\gamma_1 \gamma'\theta' =^V \gamma_1\theta_1$ and hence
 		\begin{align*}
@@ -262,9 +262,9 @@ Now we have the following theorem which express the completeness of narrowing on
         $$\tau \eta \gamma' \rho' = \tau \eta \gamma =_E \tau \rho =_E \trsNF{\sigma} =_E \sigma.$$
         Hence, $\tau \eta \gamma' \iqoless[E][V_1] \sigma$. As required.
     \end{proof}
-    From the above proof one can see that we can indeed drop the strong normalization condition if only normalized substitution is considered. Strong normalization of $\trs$ is only used in the normalization of $\sigma$ to $\trsNF{\sigma}$, hence we can strengthen this result by dropping the strong normalization requirement and restricting ourselves to normalizable substitutions. Since in a weakly normalizing TRS every substitution is normalizable, we obtain the following result.
+    From the above proof one can see that we can indeed drop the strong normalisation condition if only normalised substitution is considered. Strong normalisation of $\trs$ is only used in the normalisation of $\sigma$ to $\trsNF{\sigma}$, hence we can strengthen this result by dropping the strong normalisation requirement and restricting ourselves to normalise substitutions. Since in a weakly normalising TRS every substitution is normalise, we obtain the following result.
     \begin{corollary}
-        Narrowing is complete for weakly normalizing and confluent Term Rewriting Systems.
+        Narrowing is complete for weakly normalising and confluent Term Rewriting Systems.
     \end{corollary}
 \end{theorem}
 

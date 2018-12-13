@@ -21,7 +21,7 @@ From the same motivations as in the unconditional narrowing case we pursuit the 
         \end{displaymath}
         \item A rewrite sequence
         $$T \rewriteOnGoals_{[e_1, p_1, l_1 \contr r_1 \Leftarrow c_1, \sigma_1]} \rewriteOnGoals \cdots \rewriteOnGoals_{[e_{n-1}, p_{n_1}, l_{n-1} \contr r_{n-1} \Leftarrow c_{n-1}, \sigma_{n-1}]} T_n$$
-        is \textit{based} on a postion constraint $B_1$ for $T_1$ if $p_i \in B_i$ for $1 \leq i \leq n - 1$ with $B_2, \dots, B_n$ defined by
+        is \textit{based} on a position constraint $B_1$ for $T_1$ if $p_i \in B_i$ for $1 \leq i \leq n - 1$ with $B_2, \dots, B_n$ defined by
         \begin{displaymath}
             B_{i+1}(e) =
             \begin{cases}
@@ -63,14 +63,14 @@ The authors in \cite{Middeldorp1994} have shown that $\trs$ is complete. Note th
     \caption{Derivation tree for the objective $eq(f(d),a)$}
     \label{figure:counterexample-basic-conditional-narrowing}
 \end{figure}
-Note that this derivation tree is basic-normalized, i.e., we explore all basic reductions. However, the following non-basic narrowing derivation shows that the goal can be solved:
+Note that this derivation tree is basic-normalised, i.e., we explore all basic reductions. However, the following non-basic narrowing derivation shows that the goal can be solved:
 \begin{align*}
     eq(f(d),a) &\narrow eq(a,a), eq(\underline{d},b), eq(\underline{d},c) \\
     & \narrow eq(a,a), eq(b,b), eq(\underline{d},c) \\
     & \narrow eq(a,a), eq(b,b), eq(c,c) \\
     & \narrow^* \top
 \end{align*}
-Note further that basic conditional narrowing is unable to solve the normalied goal $eq(f(x),a)$. In \cite{Middeldorp1994}, Holldobler himself has finded the problem in his previous proof. The mistake was due to the incorrect assumption that the strong normalization of $\rewriteOnGoals_\trs$ is implied by the strong normalization of $\trs$. We now show, following his own steps, that completeness of basic conditional narrowing can be ensured by strengthening strong normalization. We begin with a definition.
+Note further that basic conditional narrowing is unable to solve the normalised goal $eq(f(x),a)$. In \cite{Middeldorp1994}, Holldobler himself has found the problem in his previous proof. The mistake was due to the incorrect assumption that the strong normalization of $\rewriteOnGoals_\trs$ is implied by the strong normalization of $\trs$. We now show, following his own steps, that completeness of basic conditional narrowing can be ensured by strengthening strong normalization. We begin with a definition.
 
 \begin{definition}
     A 1-CTRS $\trs$ is decreasing if there exists a well-founded extension $>$ of the rewrite relation $\contr_\trs$ with the following properties:

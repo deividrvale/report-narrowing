@@ -4,7 +4,7 @@ We now study a restricted form or narrowing, called basic narrowing. It was intr
 
 This restriction was motivated by the very large search space of standard narrowing. The search space for narrowing is quite large in applications and this is a step back when solving equations on \textit{resolutions steps}\footnote{We study some applications of narrowing in solving SLD-resolution later in the report.} (based on narrowing) and automated reasoning. For example, in Example \ref{example:app-concat-standard-narrowing} the search space is a infinite set.
 
-To ease the exposition and center the attention only on solving equations making clear the role of TRS in reductions, we temporally abandon the transformation rules approach. We return to this approach later when considering improvements of basic narrowing.
+To ease the exposition and focusing the attention only on solving equations making clear the role of TRS in reductions, we temporally abandon the transformation rules approach. We return to this approach later when considering improvements of basic narrowing.
 
 We do this by assuming that $\trs$ contain the additional rewrite rule $eq(x,x) \contr true$ and consider terms of the following form:
 \begin{itemize}
@@ -16,7 +16,7 @@ Terms of the second form are called goals. It should be noted that confluence, c
 
 \begin{definition}
 	\begin{enumerate}
-		\item Let $t_1 \narrow_{[p_1, l_1 \contr r_1, \sigma_1]} t_2 \narrow_{[p_2, l_2 \contr r_2, \sigma_2]} \cdots \narrow_{[p_{n-1}, l_{n-1} \contr r_{n-1}, \sigma_{n-1}]} t_n$ be a narrowing derivation. Define sets of positions $B_1, \cdots, B_n$ inductivelly as follows:
+		\item Let $t_1 \narrow_{[p_1, l_1 \contr r_1, \sigma_1]} t_2 \narrow_{[p_2, l_2 \contr r_2, \sigma_2]} \cdots \narrow_{[p_{n-1}, l_{n-1} \contr r_{n-1}, \sigma_{n-1}]} t_n$ be a narrowing derivation. Define sets of positions $B_1, \cdots, B_n$ inductively as follows:
 		      \begin{align*}
 			      B_1     & = \basicPos{t_1}                                            \\
 			      B_{i+1} & = \mathbb{B}(B_i, p_i, r_i) \qquad \text{for } 1 \leq i < n
@@ -31,7 +31,7 @@ Terms of the second form are called goals. It should be noted that confluence, c
 Now the problem is to prove the completeness of $E$-unification based on basic narrowing. The strategy is still the same: lift basic $\contr$-derivations to basic $narrow$-derivations by using the lifting lemma. To complete this task one needs to prove $\contr$-derivations are basic before they are lifted by lifting lemma. To complete this task, Hullot asserts in \cite{hullot:cfunif} the following Lemma, (Lemma 3 in his paper).
 
 \begin{lemma}[Hullot, Lemma 3]
-	Let $t = s\sigma$ with some normalized substitution $\sigma$. Every $\contr$-reduction from $t$ is based on $\basicPos{s}$.
+	Let $t = s\sigma$ with some normalised substitution $\sigma$. Every $\contr$-reduction from $t$ is based on $\basicPos{s}$.
 \end{lemma}
 
 \begin{example}[\cite{10.1007/3-540-51564-X_51} Example 3]\label{example:hullot-counter-ex}
@@ -55,12 +55,12 @@ In general, when ones construct a basic reduction sequence from a term $t$ to $\
 Now, with the innermost selection of redexes we can guarantee that reductions sequence is basic.
 
 \begin{proposition}\label{proposition:innermost-based-on-t}
-	Let $\trs$ be a TRS and $\sigma$ a normalized substitution. Every innermost reduction sequence starting from $t\sigma$ is based on $\basicPos{t}$.
+	Let $\trs$ be a TRS and $\sigma$ a normalised substitution. Every innermost reduction sequence starting from $t\sigma$ is based on $\basicPos{t}$.
 	\begin{proof}
-		The proof is by induction on the lenght of the reduction. For the base case suppose we have a sequence
+		The proof is by induction on the length of the reduction. For the base case suppose we have a sequence
 		$$ t\sigma = t_1 \contr_{[p_1, l_1 \contr r_1, \sigma_1]} t_2 $$
-		We need to show that $p_1 \in B_1 = \basicPos{t_1}$. It follows that any redex of $t_1$ must be in $\basicPos{t_1}$ since $\sigma$ is a normalized substitution.
-		Now consider the reduction of lenght $n$ starting from $t_1$, that is,
+		We need to show that $p_1 \in B_1 = \basicPos{t_1}$. It follows that any redex of $t_1$ must be in $\basicPos{t_1}$ since $\sigma$ is a normalised substitution.
+		Now consider the reduction of length $n$ starting from $t_1$, that is,
 		$$t \sigma = t_1 \contr_{[p_1, l_1 \contr r_1, \sigma_1]} t_2 \contr_{[p_2, l_2 \contr r_2, \sigma_2]} \cdots \contr_{[p_{n-1}, l_{n-1} \contr r_{n-1}, \sigma_{n-1}]} t_n$$
 		By induction on $i$ we must show that $\restr{p_i}{p}$ is a normal form for all $p$ in $\pos{t_i}\setminus B_i$ for $1 \leq i \leq n$. Suppose the statement holds for $i = 1, \dots, m$ and let $p \in \pos{t_{m+1}} \setminus B_{m+1}$. There are two possible cases: $\parPos{p}{p_m}$ or $p_m \leq p$. Note that the case $p < p_m$ is impossible since this would imply $p \in B_{m+1}$, because $B_m$ is closed under prefix and $p_m \in B_m$.
 		\begin{enumerate}
@@ -75,13 +75,13 @@ Now, with the innermost selection of redexes we can guarantee that reductions se
 If $\trs$ is convergent, then $\trs$ has the property that there exists an innermost reduction sequence from every term $t$ to its normal form $\trsNF{t}$. However, this is not true in general. In what follows we work under the hypothesis that $\trs$ satisfy this property.
 
 \begin{definition}
-	A TRS $\trs$ is \textit{normalizing with innermost reductions} if for every term there exists an innermost reduction sequence to its normal form.
+	A TRS $\trs$ is \textit{normalising with innermost reductions} if for every term there exists an innermost reduction sequence to its normal form.
 \end{definition}
 
 \begin{theorem}
-	If $\trs$ is confluent and \textit{normalizing with innermost reductions} then basic narrowing is complete for $\trs$-unification problems.
+	If $\trs$ is confluent and \textit{normalising with innermost reductions} then basic narrowing is complete for $\trs$-unification problems.
 	\begin{proof}
-		Suppose that $s\sigma \eqUnif{\trs} t\sigma$. Let $\trsNF{\sigma}$ be the normal form of $\sigma$. Notice that $\sigma \eqUnif{\trs} \trsNF{\sigma}$ and $\trsNF{\sigma} \eqUnif{\trs} t\trsNF{\sigma}$. Confluence of $\trs$ yields the joinability of $s\trsNF{\sigma}$ and $t \trsNF{\sigma}$. Hence there exists a rewrite sequence $eq(s,t)\trsNF{\sigma} \stc true$. We may assume that this reduction is innermost, since $\trs$ is normalizing with innermost reduction.
+		Suppose that $s\sigma \eqUnif{\trs} t\sigma$. Let $\trsNF{\sigma}$ be the normal form of $\sigma$. Notice that $\sigma \eqUnif{\trs} \trsNF{\sigma}$ and $\trsNF{\sigma} \eqUnif{\trs} t\trsNF{\sigma}$. Confluence of $\trs$ yields the joinability of $s\trsNF{\sigma}$ and $t \trsNF{\sigma}$. Hence there exists a rewrite sequence $eq(s,t)\trsNF{\sigma} \stc true$. We may assume that this reduction is innermost, since $\trs$ is normalising with innermost reduction.
 
 		By the above proposition, this reduction is based on $\basicPos{eq(s,t)}$. Now by the lifting lemma we can lift this $\contr$-derivation to a narrowing derivation $eq(s,t) \narrow_{\gamma}^{*} true$ (considering $V = \vars{s,t}$) such that in each step we use the same rewrite rules at the same positions. It follows that the narrowing derivation $eq(s,t) \narrow_\gamma^* true$ is basic and based on $B_1 = \basicPos{eq(s,t)}$.
 
@@ -145,7 +145,7 @@ Consider the TRS
 	\end{cases}
 \end{displaymath}
 
-It follows that $\trs$ is confluent and weakly normalizing, hence semi-convergent. However, the goal $eq(f(a),c)$ cannot be solved by basic narrowing. The figure below shows all narrowing derivations starting from this goal. Recall that non-basic positions are marked by underline. Since the goal $eq(f(a),c)$ is variable-free, all narrowing steps are also rewrite steps. The steps marked by a star are non-basic because each of them narrows an occurrence of the term $a$ introduced by the narrowing substitution $[x / a]$.
+It follows that $\trs$ is confluent and weakly normalising, hence semi-convergent. However, the goal $eq(f(a),c)$ cannot be solved by basic narrowing. The figure below shows all narrowing derivations starting from this goal. Recall that non-basic positions are marked by underline. Since the goal $eq(f(a),c)$ is variable-free, all narrowing steps are also rewrite steps. The steps marked by a star are non-basic because each of them narrows an occurrence of the term $a$ introduced by the narrowing substitution $[x / a]$.
 \begin{figure}[!ht]
     \begin{displaymath}
         \xymatrix{
@@ -160,4 +160,4 @@ It follows that $\trs$ is confluent and weakly normalizing, hence semi-convergen
     \label{figure:counterexample}
 \end{figure}
 
-Note that (from figure above) all successful derivation step passes through a marked derivation step, basic narrowing is unable to solve the normalized goal $eq(g(x,x),c)$ since the only basic narrowing step starting from $eq(g(x,x),c)$ produces the goal $eq(f(a),c)$, this follows from  $eq(g(x,x),c) \narrow_{[x/a]} eq(f(a),c)$. In particular, basic narrowing is not complete for confluent TRS with respect to normalizable substitutions, contrary to what was generally believed.
+Note that (from figure above) all successful derivation step passes through a marked derivation step, basic narrowing is unable to solve the normalised goal $eq(g(x,x),c)$ since the only basic narrowing step starting from $eq(g(x,x),c)$ produces the goal $eq(f(a),c)$, this follows from  $eq(g(x,x),c) \narrow_{[x/a]} eq(f(a),c)$. In particular, basic narrowing is not complete for confluent TRS with respect to normalise substitutions, contrary to what was generally believed.

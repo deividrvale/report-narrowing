@@ -3,10 +3,10 @@
 Conditional narrowing is our next step on building tools for the main goal of our study, that is, the integration of functional and logic languages.
 
 \begin{definition}
-	If $c$ is a finite sequence of equations $s_1 = t_1, \dots, s_n = t_n$ then $\overline{c}$ denotes the multiset $\{ eq(s_1, t_1), \dots, eq(s_n, t_n) \}$ wich will be called \textit{goal clause}. If a \textit{goal clause} is the multiset consisting of a finite number of ``true''s then we denote it as $\top$.
+	If $c$ is a finite sequence of equations $s_1 = t_1, \dots, s_n = t_n$ then $\overline{c}$ denotes the multi-set $\{ eq(s_1, t_1), \dots, eq(s_n, t_n) \}$ which will be called \textit{goal clause}. If a \textit{goal clause} is the multi-set consisting of a finite number of ``true''s then we denote it as $\top$.
 \end{definition}
 
-Conditional narrowing is definte over goal clauses instead of being defined over terms directly, as in the unconditional case. To simplify notation, call a generic goal clause $eq(s_1, t_1)$ just as an expression $e$.
+Conditional narrowing is defined over goal clauses instead of being defined over terms directly, as in the unconditional case. To simplify notation, call a generic goal clause $eq(s_1, t_1)$ just as an expression $e$.
 
 \begin{definition}
 	Let $\trs$ be a CTRS. A goal clause $S$ \textit{conditionally narrows} to a goal clause $T$ iff there exists a goal $e \in S$, a non-variable position $p \in \basicPos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a conditional rewrite rule in $\trs$, and a substitution $\sigma$ such that:
@@ -53,10 +53,10 @@ Now we prove soundness of conditional narrowing.
 	\end{proof}
 \end{theorem}
 
-Now the main goal is prove a completeness result for conditional narrowing. The ideia is still the same: compare narrowing steps with a kind of rewrite relation and lift rewrite steps to narrowing steps. Remember that early we have defined narrowing on terms rather than equational goals. In order to compare conditional rewriting and conditional narrowing, we need to introduce a kind of rewriting relation on goal clauses, we call it \textit{reduction without evaluating conditions}.
+Now the main goal is prove a completeness result for conditional narrowing. The idea is still the same: compare narrowing steps with a kind of rewrite relation and lift rewrite steps to narrowing steps. Remember that early we have defined narrowing on terms rather than equational goals. In order to compare conditional rewriting and conditional narrowing, we need to introduce a kind of rewriting relation on goal clauses, we call it \textit{reduction without evaluating conditions}.
 
 \begin{definition}\label{definition:rewrite-on-goals}
-	Let $\trs$ be a CTRS and suppose that $S$ and $T$ are goal clasuses. We say $S \rewriteOnGoals_\trs T$ if there exists a goal $e \in S$, a postion $p \in \pos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a rewrite rule in $\trs$ and a substitution $\sigma$ such that
+	Let $\trs$ be a CTRS and suppose that $S$ and $T$ are goal clauses. We say $S \rewriteOnGoals_\trs T$ if there exists a goal $e \in S$, a position $p \in \pos{e}$, a variant $\rho : l \contr r \Leftarrow c$ of a rewrite rule in $\trs$ and a substitution $\sigma$ such that
 	\begin{enumerate}
 		\item $\restr{e}{p} = l \sigma$
 		\item $T = (S \setminus \{e\}) \cup \{ e[r\sigma]_p \} \cup \overline{c} \sigma$.
@@ -64,7 +64,7 @@ Now the main goal is prove a completeness result for conditional narrowing. The 
 	\end{enumerate}
 \end{definition}
 
-Note that this relation extend the action of the CTRS $\trs$ from terms to multisets of goal clauses. In this view, we also define the approximation $\rewriteOnGoals_\trs^n \; (n \geq 0)$ as in Definition \ref{definition:ctrs-approximation-rewrite-relation}, that is, $S \rewriteOnGoals_\trs^0$ if $T = (S \setminus \{e\}) \cup \{true\}$ with $e = eq(s,s) \in S$ and $S \rewriteOnGoals_\trs^n$ if $S \rewriteOnGoals_{[e, \rho, \sigma]} T$ with $\trs_n \vdash \overline{c} \sigma$. Again, $\rewriteOnGoals_\trs^n \subseteq \rewriteOnGoals_\trs^{n+1}$ for all $n \geq 0$ and
+Note that this relation extend the action of the CTRS $\trs$ from terms to multi-sets of goal clauses. In this view, we also define the approximation $\rewriteOnGoals_\trs^n \; (n \geq 0)$ as in Definition \ref{definition:ctrs-approximation-rewrite-relation}, that is, $S \rewriteOnGoals_\trs^0$ if $T = (S \setminus \{e\}) \cup \{true\}$ with $e = eq(s,s) \in S$ and $S \rewriteOnGoals_\trs^n$ if $S \rewriteOnGoals_{[e, \rho, \sigma]} T$ with $\trs_n \vdash \overline{c} \sigma$. Again, $\rewriteOnGoals_\trs^n \subseteq \rewriteOnGoals_\trs^{n+1}$ for all $n \geq 0$ and
 $$\rewriteOnGoals_\trs := \bigcup\limits_{n \geq 0} \rewriteOnGoals_\trs^n.$$
 As usual, $\rewriteOnGoals^*$ denote the reflexive-transitive closure of $\rewriteOnGoals$.
 \begin{remark}
@@ -89,7 +89,7 @@ As usual, $\rewriteOnGoals^*$ denote the reflexive-transitive closure of $\rewri
 	\end{proof}
 \end{lemma}
 
-We write $S \cong T$ if the goal clauses $S$ and $T$ are identical or they differ only in the number of $true$'s, i.e., $S - \top = T - \top$ by som abuse of notation.
+We write $S \cong T$ if the goal clauses $S$ and $T$ are identical or they differ only in the number of $true$'s, i.e., $S - \top = T - \top$ by  abuse of notation.
 
 \begin{proposition}(\cite{Middeldorp1994}, Proposition 6.9)
 	Let $\trs$ be a CTRS and $S$ a goal clause.
@@ -106,14 +106,14 @@ We write $S \cong T$ if the goal clauses $S$ and $T$ are identical or they diffe
 Now, following our standard strategy, we give the statement of a \textit{lifting lemma} for conditional narrowing.
 
 \begin{lemma}\label{lemma:lifting-lemma-conditional-narrowing}
-	Let $\trs$ be a 1-CTRS. Suppose we have goals clauses $S$ and $T$, a normalized substitution $\theta$, and a set $V$ of variables such that $\vars{S} \cup \dom{\theta} \subseteq V$ and $T = S \theta$. If $T \rewriteOnGoals^*_\trs T'$ then there exists a goal clause $S'$ and substitution $\theta', \sigma$ such that
+	Let $\trs$ be a 1-CTRS. Suppose we have goals clauses $S$ and $T$, a normalised substitution $\theta$, and a set $V$ of variables such that $\vars{S} \cup \dom{\theta} \subseteq V$ and $T = S \theta$. If $T \rewriteOnGoals^*_\trs T'$ then there exists a goal clause $S'$ and substitution $\theta', \sigma$ such that
 	\begin{enumerate}
 		\item $S \narrow^*_\trs S'$
 		\item $S'\theta' = T'$
 		\item $\theta =^V = \sigma\theta'$
-		\item $\theta'$ is normalized
+		\item $\theta'$ is normalised
 	\end{enumerate}
-	Futhermore, we may assume that the narrowing derivation $S \narrow^*_\sigma S'$ and the rewrite sequence $T \rewriteOnGoals^*_\trs T'$ employ the same rewrite rules at the same positions in the corresponding goals.
+	Furthermore, we may assume that the narrowing derivation $S \narrow^*_\sigma S'$ and the rewrite sequence $T \rewriteOnGoals^*_\trs T'$ employ the same rewrite rules at the same positions in the corresponding goals.
 	\begin{proof}
 		Almost identical to the proof of the lifting lemma for TRSs, Lemma \ref{lemma:lifting-lemma-ordinary-narrowing}. The only difference is that we are dealing with goals clauses instead of terms.
 	\end{proof}
